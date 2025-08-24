@@ -2,7 +2,10 @@ package com.app.bookfinder.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -14,6 +17,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.bookfinder.R
 
@@ -23,49 +28,50 @@ fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
+    onClear: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     placeholder: String = stringResource(R.string.search_placeholder),
     leadingIcon: ImageVector = Icons.Default.Search,
-    trailingIcon: ImageVector? = Icons.Default.Clear
+    trailingIcon: ImageVector? = Icons.Default.Clear,
+    isLoading: Boolean = false
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     
-    var isSearchActive by remember { mutableStateOf(false) }
-    
-    SearchBar(
-        query = { query },
-        onQueryChange = onQueryChange,
-        onSearch = { searchQuery ->
-            onSearch(searchQuery)
-            focusManager.clearFocus()
-            isSearchActive = false
-        },
-        active = isSearchActive,
-        onActiveChange = { isSearchActive = it },
-        placeholder = { 
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = {
             Text(
-                placeholder,
+                text = placeholder,
                 style = MaterialTheme.typography.bodyLarge
-            ) 
+            )
         },
-        leadingIcon = { 
-            Icon(
-                leadingIcon, 
-                contentDescription = stringResource(R.string.search_books),
-                tint = MaterialTheme.colorScheme.primary
-            ) 
+        leadingIcon = {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = stringResource(R.string.search_books),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         },
         trailingIcon = {
-            if (query.isNotEmpty()) {
+            if (query.isNotEmpty() && !isLoading) {
                 IconButton(
                     onClick = {
                         onQueryChange("")
-                        onSearch("")
+                        onClear?.invoke()
                     }
                 ) {
                     Icon(
-                        trailingIcon, 
+                        imageVector = trailingIcon ?: Icons.Default.Clear,
                         contentDescription = stringResource(R.string.search_clear),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -76,20 +82,68 @@ fun SearchBar(
             .fillMaxWidth()
             .padding(16.dp)
             .focusRequester(focusRequester),
-        shape = RoundedCornerShape(16.dp),
-        colors = SearchBarDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-            dividerColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
-            inputFieldColors = SearchBarDefaults.inputFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            )
-        )
-    ) {
-        // Search suggestions can be added here if needed
-    }
+        shape = RoundedCornerShape(20.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        ),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                if (query.isNotEmpty() && !isLoading) {
+                    onSearch(query)
+                    focusManager.clearFocus()
+                }
+            }
+        ),
+        singleLine = true,
+        enabled = !isLoading
+    )
     
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchBarPreview() {
+    MaterialTheme {
+        SearchBar(
+            query = "Android",
+            onQueryChange = {},
+            onSearch = {},
+            isLoading = false
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchBarEmptyPreview() {
+    MaterialTheme {
+        SearchBar(
+            query = "",
+            onQueryChange = {},
+            onSearch = {},
+            isLoading = false
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchBarLoadingPreview() {
+    MaterialTheme {
+        SearchBar(
+            query = "Android",
+            onQueryChange = {},
+            onSearch = {},
+            isLoading = true
+        )
     }
 }

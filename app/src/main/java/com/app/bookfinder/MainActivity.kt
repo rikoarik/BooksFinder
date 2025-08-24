@@ -1,5 +1,6 @@
 package com.app.bookfinder
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,6 +31,8 @@ import com.app.bookfinder.ui.viewmodel.BookDetailViewModel
 import com.app.bookfinder.ui.viewmodel.BookViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
 
@@ -47,6 +50,7 @@ class MainActivity : ComponentActivity() {
 fun BookFinderApp() {
     val navController: NavHostController = rememberNavController()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     
     // Initialize dependencies
     val bookDatabase = BookDatabase.getDatabase(context)
@@ -69,10 +73,6 @@ fun BookFinderApp() {
         BookViewModel(bookRepository)
     }
     
-    val bookDetailViewModel: BookDetailViewModel = viewModel {
-        BookDetailViewModel(bookRepository, SavedStateHandle())
-    }
-    
     // Theme based on preferences
     val isDarkTheme = userPreferencesState.isDarkMode
     
@@ -84,13 +84,17 @@ fun BookFinderApp() {
             BookFinderNavigation(
                 navController = navController,
                 bookViewModel = bookViewModel,
-                bookDetailViewModel = bookDetailViewModel,
+                bookRepository = bookRepository,
                 userPreferences = userPreferencesState,
                 onThemeChange = { isDark ->
-                    userPreferences.updateDarkMode(isDark)
+                    coroutineScope.launch {
+                        userPreferences.updateDarkMode(isDark)
+                    }
                 },
                 onLanguageChange = { language ->
-                    userPreferences.updateLanguage(language)
+                    coroutineScope.launch {
+                        userPreferences.updateLanguage(language)
+                    }
                 }
             )
         }

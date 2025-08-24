@@ -11,8 +11,11 @@ interface OpenLibraryApi {
     @GET("search.json")
     suspend fun searchBooks(
         @Query("q") query: String,
-        @Query("fields") fields: String = "key,title,author_name,first_publish_year,publisher,isbn,cover_i,subject",
-        @Query("limit") limit: Int = 20
+        @Query("fields") fields: String = "key,title,author_name,first_publish_year,publisher,isbn,cover_i,subject,language",
+        @Query("limit") limit: Int = 20,
+        @Query("page") page: Int = 1,
+        @Query("lang") language: String? = null,
+        @Query("sort") sort: String? = null
     ): SearchResponse
     
     @GET("works/{workId}.json")

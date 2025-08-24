@@ -6,15 +6,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.bookfinder.R
 import com.app.bookfinder.data.preferences.UserPreferences
@@ -72,7 +70,10 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Icon(
-                            imageVector = if (userPreferences.isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
+                            painter = painterResource(
+                                if (userPreferences.isDarkMode) R.drawable.ic_dark_mode 
+                                else R.drawable.ic_light_mode
+                            ),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -93,7 +94,7 @@ fun SettingsScreen(
                             label = { Text(stringResource(R.string.settings_theme_light)) },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.LightMode,
+                                    painter = painterResource(R.drawable.ic_light_mode),
                                     contentDescription = null
                                 )
                             },
@@ -106,7 +107,7 @@ fun SettingsScreen(
                             label = { Text(stringResource(R.string.settings_theme_dark)) },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.DarkMode,
+                                    painter = painterResource(R.drawable.ic_dark_mode),
                                     contentDescription = null
                                 )
                             },
@@ -115,55 +116,39 @@ fun SettingsScreen(
                     }
                 }
             }
-            
-            // Language Section
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Language,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = stringResource(R.string.settings_language),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        FilterChip(
-                            selected = userPreferences.language == "en",
-                            onClick = { onLanguageChange("en") },
-                            label = { Text(stringResource(R.string.settings_language_english)) },
-                            modifier = Modifier.weight(1f)
-                        )
-                        
-                        FilterChip(
-                            selected = userPreferences.language == "id",
-                            onClick = { onLanguageChange("id") },
-                            label = { Text(stringResource(R.string.settings_language_indonesian)) },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-            }
+
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenPreview() {
+    MaterialTheme {
+        SettingsScreen(
+            userPreferences = UserPreferences(
+                isDarkMode = false,
+                language = "en"
+            ),
+            onThemeChange = {},
+            onLanguageChange = {},
+            onBackClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenDarkPreview() {
+    MaterialTheme {
+        SettingsScreen(
+            userPreferences = UserPreferences(
+                isDarkMode = true,
+                language = "id"
+            ),
+            onThemeChange = {},
+            onLanguageChange = {},
+            onBackClick = {}
+        )
     }
 }

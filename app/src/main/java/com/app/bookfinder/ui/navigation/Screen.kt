@@ -12,7 +12,10 @@ sealed class Screen(val route: String) {
             }
         )
         
-        fun createRoute(workId: String) = "book_detail/$workId"
+        fun createRoute(workId: String): String {
+            val cleanWorkId = workId.removePrefix("/")
+            return "book_detail/$cleanWorkId"
+        }
     }
     object Settings : Screen("settings")
 }

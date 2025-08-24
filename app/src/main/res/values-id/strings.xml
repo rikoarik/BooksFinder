@@ -27,6 +27,7 @@
     
     <!-- States -->
     <string name="state_loading">Memuat buku…</string>
+    <string name="loading_books">Memuat buku…</string>
     <string name="state_error_title">Ups!</string>
     <string name="state_empty_search">Tidak ada buku ditemukan. Coba cari yang lain.</string>
     <string name="state_empty_favorites">Anda belum menambahkan buku ke favorit. Cari buku dan ketuk ikon hati untuk menambahkannya!</string>
@@ -40,4 +41,15 @@
     <string name="settings_theme_system">Sistem</string>
     <string name="settings_language_english">English</string>
     <string name="settings_language_indonesian">Bahasa Indonesia</string>
+    
+    <!-- New Features -->
+    <string name="load_more_books">Muat Lebih Banyak Buku</string>
+    <string name="loading_more_books">Memuat lebih banyak buku...</string>
+    <string name="filter_and_sort">Filter &amp; Urutkan</string>
+    <string name="language">Bahasa</string>
+    <string name="sort_by">Urutkan</string>
+    <string name="retry">Coba Lagi</string>
+    <string name="refresh">Segarkan</string>
+    <string name="refreshing">Menyegarkan...</string>
+    <string name="no_books_found_for_query">Tidak ada buku ditemukan untuk \'%1$s\'. Coba cari yang lain.</string>
 </resources>

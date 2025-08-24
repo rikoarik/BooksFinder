@@ -5,7 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
@@ -16,10 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.app.bookfinder.R
 import com.app.bookfinder.data.model.Book
 import com.app.bookfinder.data.model.Resource
 import com.app.bookfinder.ui.components.ErrorState
@@ -32,18 +34,20 @@ fun BookDetailScreen(
     viewModel: BookDetailViewModel,
     onBackClick: () -> Unit
 ) {
-    val book by viewModel.book.collectAsStateWithLifecycle()
-    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
+    val book by viewModel.book.collectAsState()
+    val isFavorite by viewModel.isFavorite.collectAsState()
+    
+    println("DEBUG: BookDetailScreen rendered - book state: $book, isFavorite: $isFavorite")
     
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Book Details") },
+                title = { Text(stringResource(R.string.book_details)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -51,7 +55,7 @@ fun BookDetailScreen(
                     IconButton(onClick = { viewModel.toggleFavorite() }) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            contentDescription = if (isFavorite) stringResource(R.string.action_remove_favorite) else stringResource(R.string.action_add_favorite),
                             tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -65,29 +69,41 @@ fun BookDetailScreen(
             )
         }
     ) { paddingValues ->
-        when (book) {
+        when (val currentBook = book) {
             is Resource.Loading -> {
+                println("DEBUG: Showing loading state")
                 LoadingState(
                     modifier = Modifier.padding(paddingValues)
                 )
             }
             is Resource.Success -> {
+                println("DEBUG: Showing book content: ${currentBook.data.title}")
                 BookDetailContent(
-                    book = book.data,
+                    book = currentBook.data,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
             is Resource.Error -> {
+                println("DEBUG: Showing error state: ${currentBook.message}")
                 ErrorState(
-                    message = book.message,
-                    onRetry = { /* Retry logic */ },
-                    modifier = Modifier.padding(paddingValues)
+                    message = currentBook.message,
+                    onRetry = { 
+                        println("DEBUG: Retry clicked")
+                        viewModel.loadBookDetail() 
+                    },
+                    modifier = Modifier.padding(paddingValues),
+                    onRefresh = { 
+                        println("DEBUG: Refresh clicked")
+                        viewModel.loadBookDetail() 
+                    },
+                    isRefreshing = false
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun BookDetailContent(
     book: Book,
@@ -107,7 +123,7 @@ private fun BookDetailContent(
         ) {
             AsyncImage(
                 model = book.getCoverImageUrl(),
-                contentDescription = "Book cover for ${book.title}",
+                contentDescription = stringResource(R.string.book_details),
                 modifier = Modifier
                     .size(120.dp)
                     .clip(RoundedCornerShape(12.dp)),
@@ -134,7 +150,7 @@ private fun BookDetailContent(
                 
                 if (book.firstPublishedYear != null) {
                     Text(
-                        text = "Published: ${book.getYearDisplay()}",
+                        text = stringResource(R.string.book_published) + ": ${book.getYearDisplay()}",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -143,13 +159,13 @@ private fun BookDetailContent(
         }
         
         // Divider
-        Divider(color = MaterialTheme.colorScheme.outlineVariant)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         
         // Description
         if (!book.description.isNullOrEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Description",
+                    text = stringResource(R.string.book_description),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -167,7 +183,7 @@ private fun BookDetailContent(
         if (!book.publisher.isNullOrEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Publisher",
+                    text = stringResource(R.string.book_publisher),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -201,7 +217,7 @@ private fun BookDetailContent(
         if (book.subjects.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Subjects",
+                    text = stringResource(R.string.book_subjects),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -223,5 +239,25 @@ private fun BookDetailContent(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BookDetailContentPreview() {
+    MaterialTheme {
+        BookDetailContent(
+            book = Book(
+                key = "works/OL123456W",
+                title = "Android Programming: The Big Nerd Ranch Guide",
+                authorNames = listOf("Bill Phillips", "Chris Stewart"),
+                firstPublishedYear = 2019,
+                publisher = "Big Nerd Ranch Guides",
+                isbn = "9780134706056",
+                coverId = 123456,
+                subjects = listOf("Android", "Programming", "Mobile Development"),
+                description = "This book is a comprehensive guide to Android development, covering everything from basic concepts to advanced topics like custom views and performance optimization."
+            )
+        )
     }
 }

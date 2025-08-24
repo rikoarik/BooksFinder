@@ -27,6 +27,7 @@
     
     <!-- States -->
     <string name="state_loading">Loading books…</string>
+    <string name="loading_books">Loading books…</string>
     <string name="state_error_title">Oops!</string>
     <string name="state_empty_search">No books found. Try searching for something else.</string>
     <string name="state_empty_favorites">You haven\'t added any books to favorites yet. Search for books and tap the heart icon to add them!</string>
@@ -40,4 +41,15 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_language_english">English</string>
     <string name="settings_language_indonesian">Bahasa Indonesia</string>
+    
+    <!-- New Features -->
+    <string name="load_more_books">Load More Books</string>
+    <string name="loading_more_books">Loading more books...</string>
+    <string name="filter_and_sort">Filter &amp; Sort</string>
+    <string name="language">Language</string>
+    <string name="sort_by">Sort by</string>
+    <string name="retry">Retry</string>
+    <string name="refresh">Refresh</string>
+    <string name="refreshing">Refreshing...</string>
+    <string name="no_books_found_for_query">No books found for \'%1$s\'. Try searching for something else.</string>
 </resources>
