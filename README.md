@@ -5,14 +5,18 @@ A modern Android application built with Kotlin, Jetpack Compose, and Material 3 
 ## ✨ Features
 
 - **🔍 Book Search**: Search for books by title or author using the Open Library API
+- **📚 Initial Book Display**: Automatically displays popular books when first opened without requiring search
+- **🔄 Smart Sorting**: Sort books by relevance, newest, oldest, random, or key - works independently of search
+- **📖 Manual Paging**: Efficient manual pagination with auto-load more when scrolling (no Paging 3 dependency)
 - **🎨 Modern UI**: Clean, Material 3 design with Jetpack Compose inspired by modern design trends
 - **🌙 Dark/Light Theme**: Toggle between dark and light themes with persistent preferences
 - **🌍 Multi-Language**: Support for English and Indonesian languages
-- **📚 Book Details**: Comprehensive book information including cover, description, publisher, ISBN, and subjects
+- **📖 Book Details**: Comprehensive book information including cover, description, publisher, ISBN, and subjects
 - **❤️ Favorites**: Save and manage your favorite books locally using Room database
 - **📱 Offline Support**: View your favorite books even without internet connection
 - **🎯 Responsive Design**: Optimized for different screen sizes and orientations
 - **⚙️ Settings**: Easy access to theme and language preferences
+- **🚀 Performance Optimized**: Fast loading with optimized page size and caching
 
 ## 🏗️ Architecture
 
@@ -23,6 +27,7 @@ The app follows the **MVVM (Model-View-ViewModel)** architecture pattern:
 - **Presentation Layer**: Jetpack Compose UI with ViewModels
 - **State Management**: Resource sealed class for loading, success, and error states
 - **Preferences**: DataStore for theme and language settings
+- **Manual Paging**: Custom pagination implementation without external libraries
 
 ## 🛠️ Tech Stack
 
@@ -37,6 +42,7 @@ The app follows the **MVVM (Model-View-ViewModel)** architecture pattern:
 - **Design System**: Material 3 with custom Poppins typography
 - **Preferences**: DataStore for user settings
 - **Code Generation**: KSP for Room
+- **Pagination**: Custom manual implementation (no Paging 3)
 
 ## 📁 Project Structure
 
@@ -122,6 +128,14 @@ Modern search component with Material 3 design, supporting real-time search and 
 ### BookCard
 Beautiful book card displaying cover image, title, author, year, and publisher with modern favorite toggle.
 
+### FilterSection
+Smart sorting options that work independently of search:
+- **Relevansi**: Default relevance-based sorting
+- **Edisi Terbaru**: Newest editions first
+- **Edisi Terlama**: Oldest editions first
+- **Acak**: Random book ordering
+- **Berdasarkan Key**: Key-based sorting
+
 ### Settings Screen
 Elegant settings interface for theme and language preferences with modern card-based design.
 
@@ -130,6 +144,20 @@ Sealed class managing UI states:
 - `Loading`: Shows progress indicator with modern card design
 - `Success<T>`: Displays data
 - `Error`: Shows error message with retry button
+
+## 🚀 Performance Features
+
+### Manual Paging System
+- **Page Size**: 20 books per page for optimal performance
+- **Auto-Load**: Automatically loads more books when scrolling near the end
+- **Loading States**: Clear loading indicators during pagination
+- **Efficient**: No external Paging 3 library dependency
+
+### Smart Loading
+- **Initial Load**: Popular books displayed immediately on app launch
+- **Sort-Based Loading**: Books load based on selected sort option without search
+- **Search Integration**: Search results with manual pagination
+- **Caching**: Efficient data management and state persistence
 
 ## 🎨 Design Inspiration
 
@@ -148,14 +176,34 @@ Users can toggle between light and dark themes through the Settings screen. The 
 ### Language Switching
 Support for English and Indonesian languages with easy switching through the Settings screen.
 
+### Sort Options
+Sort books independently of search:
+- Click any sort option to immediately load books with that criteria
+- No search query required for sorting
+- Seamless integration with search when query is present
+
 ## 📱 Screenshots
 
 The app features several key screens:
-- **Home Screen**: Modern search interface with tab navigation
-- **Search Results**: Beautiful book cards with cover images
+- **Home Screen**: Modern search interface with tab navigation and initial book display
+- **Search Results**: Beautiful book cards with cover images and manual pagination
 - **Book Details**: Comprehensive book information display
 - **Favorites**: Personal book collection
 - **Settings**: Theme and language preferences
+
+## 🔍 Search & Navigation Features
+
+### Smart Search
+- **Instant Display**: Popular books shown immediately without search
+- **Real-time Search**: Search as you type with instant results
+- **Clear Search**: Easy return to popular books display
+- **Sort Integration**: Search results respect selected sort options
+
+### Navigation
+- **Smooth Transitions**: Seamless navigation between screens
+- **Book Details**: Full book information with cover images
+- **Back Navigation**: Intuitive back button functionality
+- **Deep Linking**: Direct navigation to book details
 
 ## 🤝 Contributing
 
