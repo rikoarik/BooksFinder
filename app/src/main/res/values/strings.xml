@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">BookFinder</string>
+    
+    <!-- Navigation -->
+    <string name="nav_search">Search</string>
+    <string name="nav_favorites">Favorites</string>
+    
+    <!-- Search -->
+    <string name="search_placeholder">Search books…</string>
+    <string name="search_books">Search books</string>
+    <string name="search_clear">Clear search</string>
+    
+    <!-- Book Details -->
+    <string name="book_details">Book Details</string>
+    <string name="book_published">Published</string>
+    <string name="book_publisher">Publisher</string>
+    <string name="book_subjects">Subjects</string>
+    <string name="book_description">Description</string>
+    <string name="book_unknown_author">Unknown Author</string>
+    <string name="book_unknown_year">Unknown Year</string>
+    
+    <!-- Actions -->
+    <string name="action_add_favorite">Add to favorites</string>
+    <string name="action_remove_favorite">Remove from favorites</string>
+    <string name="action_try_again">Try Again</string>
+    <string name="action_back">Back</string>
+    
+    <!-- States -->
+    <string name="state_loading">Loading books…</string>
+    <string name="state_error_title">Oops!</string>
+    <string name="state_empty_search">No books found. Try searching for something else.</string>
+    <string name="state_empty_favorites">You haven\'t added any books to favorites yet. Search for books and tap the heart icon to add them!</string>
+    
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_indonesian">Bahasa Indonesia</string>
+</resources>
