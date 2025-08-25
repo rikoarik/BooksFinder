@@ -46,24 +46,17 @@ fun BookListTab(
                     hasMorePages &&
                     !isLoadingMore
 
-            // Debug logging
-            if (shouldLoad) {
-                println("DEBUG: shouldLoadMore = true - lastVisibleIndex: ${lastVisibleItem?.index}, totalItems: $totalItems, hasMorePages: $hasMorePages, isLoadingMore: $isLoadingMore")
-            }
-
             shouldLoad
         }
     }
 
     LaunchedEffect(shouldLoadMore.value) {
         if (shouldLoadMore.value) {
-            println("DEBUG: LaunchedEffect triggered - calling onLoadMore")
             isLoadingMore = true
             onLoadMore()
             // Reset loading state after a delay
-            delay(1000)
+            delay(300)
             isLoadingMore = false
-            println("DEBUG: LaunchedEffect completed - isLoadingMore set to false")
         }
     }
 
@@ -89,7 +82,6 @@ fun BookListTab(
                         BookCard(
                             book = book,
                             onBookClick = {
-                                println("DEBUG: BookListTab - Book clicked with key: ${book.key}")
                                 onBookClick(book.key)
                             },
                             onFavoriteClick = onFavoriteClick
