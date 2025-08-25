@@ -1,259 +1,261 @@
-# BookFinder - Android App
+# 📚 BookFinder - Android Book Search App
 
-A modern Android application built with Kotlin, Jetpack Compose, and Material 3 design that allows users to search for books using the Open Library API and manage their favorite books. The app features a beautiful, modern UI inspired by contemporary design trends with support for dark/light themes.
+A modern Android application built with Jetpack Compose for searching and discovering books using the OpenLibrary API. Features a collapsible search interface, comprehensive book details, and offline favorites management.
 
 ## ✨ Features
 
-- **📚 Initial Book Display**: Automatically displays popular books when first opened without requiring search
-- **🔍 Smart Search**: Search for books by title or author using the Open Library API with real-time results
-- **🔄 Smart Sorting**: Sort books by relevance, newest, oldest, random, or key - works independently of search
-- **📖 Manual Paging**: Efficient manual pagination with auto-load more when scrolling (no Paging 3 dependency)
-- **❤️ Favorites Management**: Save, view, and manage favorite books with persistent local storage
-- **📖 Book Details**: Comprehensive book information including cover, description, publisher, ISBN, and subjects
-- **🎨 Modern UI**: Clean, Material 3 design with Jetpack Compose and custom Poppins typography
-- **🌙 Dark/Light Theme**: Toggle between dark and light themes with persistent preferences
-- **📱 Offline Support**: View your favorite books even without internet connection
-- **🎯 Responsive Design**: Optimized for different screen sizes and orientations
-- **⚙️ Settings**: Easy access to theme preferences
-- **🚀 Performance Optimized**: Fast loading with optimized page size and efficient data management
+### 🔍 **Smart Search Interface**
+- **Collapsible Search Bar**: Search bar yang bisa di-tutup dan di-buka dengan animasi smooth
+- **Horizontal Expand Animation**: Search bar expand horizontal dari kiri ke kanan saat di-klik
+- **Auto-focus Management**: Otomatis focus ke input field saat search bar expand
+- **Smart State Management**: Auto-clear search query saat di-collapse
+
+### 📱 **Modern UI/UX**
+- **Material Design 3**: Menggunakan Material You design system
+- **Smooth Animations**: 300ms duration dengan tween easing
+- **Responsive Layout**: Adaptif untuk berbagai ukuran layar
+- **Dark/Light Theme**: Support untuk tema gelap dan terang
+
+### 🗂️ **Tab Navigation**
+- **Book List Tab**: Daftar buku dengan infinite scroll dan load more
+- **Favorites Tab**: Manajemen buku favorit dengan offline storage
+- **Smart Tab Logic**: 2 tab yang jelas tanpa redundansi
+
+### ⚙️ **Settings & Configuration**
+- **Settings Button**: Icon settings (⚙️) di top bar untuk akses cepat
+- **Theme Toggle**: Switch antara light dan dark mode
+- **Language Support**: Multi-language support (English & Indonesian)
+- **User Preferences**: Persistent settings dengan DataStore
+
+### 📖 **Book Management**
+- **Comprehensive Search**: Search berdasarkan judul, author, subject
+- **Book Details**: Informasi lengkap buku dengan cover image
+- **Favorites System**: Save/unsave buku ke favorites
+- **Offline Storage**: Data tersimpan lokal dengan Room database
+
+### 🔧 **Advanced Features**
+- **Filter & Sort**: Sort berdasarkan relevansi, edisi terbaru, klasik, acak
+- **Infinite Scroll**: Load more books dengan pagination
+- **Error Handling**: Proper error states dan retry functionality
+- **Loading States**: Smooth loading indicators
 
 ## 🏗️ Architecture
 
-The app follows the **MVVM (Model-View-ViewModel)** architecture pattern with clean separation of concerns:
+### **MVVM Pattern**
+- **ViewModel**: `BookViewModel`, `BookDetailViewModel`
+- **Repository**: `BookRepository` dengan local dan remote data sources
+- **UI State**: Reactive UI dengan StateFlow dan Compose
 
-- **Data Layer**: Repository pattern with Room database, Retrofit API, and DataStore preferences
-- **Domain Layer**: Business logic and data models with Resource sealed class for state management
-- **Presentation Layer**: Jetpack Compose UI with ViewModels and StateFlow
-- **State Management**: Resource sealed class for loading, success, and error states
-- **Preferences**: DataStore for theme settings persistence
-- **Manual Paging**: Custom pagination implementation without external libraries
+### **Data Layer**
+- **Local**: Room database dengan offline caching
+- **Remote**: OpenLibrary API dengan Retrofit
+- **Caching**: In-memory cache dengan TTL untuk API responses
 
-## 🛠️ Tech Stack
+### **Navigation**
+- **Compose Navigation**: Single Activity dengan multiple screens
+- **Deep Linking**: Support untuk direct navigation ke book details
+- **Back Stack**: Proper navigation history management
 
-- **Language**: Kotlin
-- **UI Framework**: Jetpack Compose with Material 3
-- **Architecture**: MVVM with Repository pattern
-- **Database**: Room with Kotlin Coroutines and Flow
-- **Networking**: Retrofit with OkHttp and Gson
-- **Image Loading**: Coil for efficient image loading and caching
-- **Navigation**: Navigation Compose for screen navigation
-- **State Management**: StateFlow and Resource sealed class
-- **Design System**: Material 3 with custom Poppins typography
-- **Preferences**: DataStore for user settings persistence
-- **Code Generation**: KSP for Room annotation processing
-- **Pagination**: Custom manual implementation (no Paging 3 dependency)
-- **Build System**: Gradle with Kotlin DSL
+## 🚀 Getting Started
 
-## 📁 Project Structure
+### **Prerequisites**
+- Android Studio Hedgehog | 2023.1.1 or later
+- Android SDK 26 (API level 26) or higher
+- Kotlin 1.9.0 or later
 
-```
-app/src/main/java/com/app/bookfinder/
-├── data/
-│   ├── local/          # Room database, DAO, and entities
-│   ├── remote/         # Retrofit API, network models, and API responses
-│   ├── repository/     # Repository implementation and data sources
-│   ├── model/          # Data models, Resource class, and API responses
-│   └── preferences/    # User preferences and DataStore implementation
-├── ui/
-│   ├── components/     # Reusable UI components (BookCard, SearchBar, FilterSection)
-│   ├── screens/        # Screen composables (Home, Detail, Settings, Favorites)
-│   ├── theme/          # Material 3 theme, colors, and typography
-│   ├── navigation/     # Navigation setup and route definitions
-│   └── viewmodel/      # ViewModels for state management and business logic
-├── MainActivity.kt     # Main activity entry point
-└── BookFinderApplication.kt  # Application class
-```
-
-## 🚀 Setup Instructions
-
-### Prerequisites
-
-- Android Studio Hedgehog or later
-- Android SDK 26+ (API level 26)
-- Kotlin 2.0.21+
-- JDK 11 or later
-
-### Installation
-
-1. **Clone the repository**
+### **Installation**
+1. Clone repository:
    ```bash
-   git clone https://github.com/rikoarik/BooksFinder.git
+   git clone https://github.com/yourusername/BookFinder.git
    cd BookFinder
    ```
 
-2. **Open in Android Studio**
-   - Open Android Studio
-   - Select "Open an existing project"
-   - Navigate to the BookFinder folder and open it
+2. Open project in Android Studio
 
-3. **Sync Gradle files**
-   - Wait for Gradle sync to complete
-   - Resolve any dependency issues if they arise
+3. Sync Gradle files
 
-4. **Build and Run**
-   - Connect an Android device or start an emulator
-   - Click the "Run" button or press Shift+F10
+4. Build and run on device/emulator
 
-### Font Setup Alternative
+### **Build Variants**
+- **Dev Debug**: Development version dengan logging enabled
+- **Dev Release**: Development release version
+- **Prod Debug**: Production debug version
+- **Prod Release**: Production release version
 
-If you prefer not to download the Poppins fonts, you can modify `app/src/main/java/com/app/bookfinder/ui/theme/Type.kt` to use the system default font by replacing `Poppins` with `FontFamily.Default`.
+## 🔑 Keystore Setup
 
-## 🎨 Theme System
+### **Generate Keystores**
+```bash
+# Release keystore
+keytool -genkey -v -keystore app/keystore/release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000
 
-The app features a sophisticated theme system with Material 3:
+# Debug keystore  
+keytool -genkey -v -keystore app/keystore/debug.keystore -alias debug -keyalg RSA -keysize 2048 -validity 10000
+```
 
-- **Light Theme**: Clean, bright interface with subtle shadows and gradients
-- **Dark Theme**: Modern dark interface with proper contrast and readability
-- **Persistent**: Theme preference is saved and restored on app restart
-- **Dynamic**: Smooth transitions between themes
-- **Custom Colors**: Tailored color scheme for optimal user experience
+### **Keystore Location**
+- **Release**: `app/keystore/release.keystore`
+- **Debug**: `app/keystore/debug.keystore`
 
-## 🔌 API Integration
+### **Build Configuration**
+```kotlin
+signingConfigs {
+    release {
+        storeFile file("keystore/release.keystore")
+        storePassword "your_store_password"
+        keyAlias "release"
+        keyPassword "your_key_password"
+    }
+}
+```
 
-The app integrates with the **Open Library API** for comprehensive book data:
+## 📦 Building APKs
 
-- **Search Endpoint**: `/search.json` - Search for books by query with pagination
-- **Work Details**: `/works/{workId}.json` - Get detailed book information
-- **Cover Images**: `https://covers.openlibrary.org/b/id/{coverId}-L.jpg` - High-quality book covers
-- **Multiple Fields**: Title, author, publisher, ISBN, subjects, and more
+### **Development Build**
+```bash
+./gradlew assembleDevDebug    # Debug APK
+./gradlew assembleDevRelease  # Release APK
+```
 
-## 💾 Database Schema
+### **Production Build**
+```bash
+./gradlew assembleProdDebug   # Debug APK
+./gradlew assembleProdRelease # Release APK
+```
 
-The Room database provides local storage for:
+### **APK Naming Convention**
+- **Dev**: `app-dev-debug.apk`, `app-dev-release.apk`
+- **Prod**: `app-prod-debug.apk`, `app-prod-release.apk`
 
-- **Book Information**: Title, author, publisher, ISBN, cover ID, subjects
-- **Favorite Status**: Persistent favorite book management
-- **Local Data**: Offline access to favorite books
-- **Efficient Queries**: Optimized database operations with Room
+## 🛡️ ProGuard Configuration
 
-## 🎯 Key Components
+### **Code Obfuscation**
+- **Release builds**: ProGuard enabled untuk code shrinking
+- **Debug builds**: ProGuard disabled untuk development
+- **Custom rules**: Comprehensive rules untuk Compose, Retrofit, Room
 
-### SearchBar
-Modern search component with Material 3 design:
-- Real-time search as you type
-- Clear search functionality
-- Beautiful rounded design with elevation
-- Loading states and error handling
+### **ProGuard Rules**
+```proguard
+# Compose
+-keep class androidx.compose.** { *; }
+-keepclassmembers class androidx.compose.** { *; }
 
-### BookCard
-Beautiful book card displaying comprehensive information:
-- High-quality cover images with Coil
-- Title, author, and publication year
-- Favorite toggle with heart icon
-- Modern card design with gradients
+# Retrofit & OkHttp
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class retrofit2.** { *; }
+-keep class okhttp3.** { *; }
 
-### FilterSection
-Smart sorting options that work independently of search:
-- **Relevansi**: Default relevance-based sorting
-- **Edisi Terbaru**: Newest editions first
-- **Edisi Terlama**: Oldest editions first
-- **Acak**: Random book ordering
-- **Berdasarkan Key**: Key-based sorting
+# Room Database
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+```
 
-### Settings Screen
-Elegant settings interface for user preferences:
-- Theme switching (Light/Dark)
-- Modern card-based design
-- Persistent preference storage
+## 🌐 API Integration
 
-### Resource Class
-Sealed class managing UI states:
-- `Loading`: Shows progress indicator with modern card design
-- `Success<T>`: Displays data with proper error handling
-- `Error`: Shows error message with retry button
+### **OpenLibrary API**
+- **Base URL**: `https://openlibrary.org/`
+- **Search Endpoint**: `/search/books.json`
+- **Work Details**: `/works/{workId}.json`
+- **Author Details**: `/authors/{authorId}.json`
 
-## 🚀 Performance Features
+### **API Features**
+- **Rate Limiting**: Proper delay antara requests
+- **User-Agent**: Custom user agent untuk compliance
+- **Timeout Configuration**: 15-20 second timeouts
+- **Error Handling**: Comprehensive error states
 
-### Manual Paging System
-- **Page Size**: 20 books per page for optimal performance
-- **Auto-Load**: Automatically loads more books when scrolling near the end
-- **Loading States**: Clear loading indicators during pagination
-- **Efficient**: No external Paging 3 library dependency
-- **Memory Optimized**: Efficient data management and state persistence
+### **Data Models**
+- **WorkDetail**: Comprehensive book information
+- **AuthorDetail**: Author information dengan bio
+- **SubjectDetail**: Subject categorization
+- **Referenced Data**: Auto-fetch semua referenced entities
 
-### Smart Loading
-- **Initial Load**: Popular books displayed immediately on app launch
-- **Sort-Based Loading**: Books load based on selected sort option without search
-- **Search Integration**: Search results with manual pagination
-- **Caching**: Efficient data management and state persistence
-- **Background Processing**: Non-blocking UI during data loading
+## 🎨 UI Components
 
-## 🎨 Design Inspiration
+### **SearchBar**
+- **Collapsible Design**: Expand/collapse dengan animasi
+- **Horizontal Animation**: Smooth expand dari kiri ke kanan
+- **Auto-focus**: Focus otomatis saat expand
+- **Clear Function**: Clear search dengan icon
 
-The app's modern design is inspired by contemporary UI/UX trends:
+### **FilterSection**
+- **Sort Options**: Relevansi, Edisi Terbaru, Klasik, Acak
+- **Animated Visibility**: Muncul/hilang dengan search bar
+- **Filter Chips**: Material Design filter chips
+- **Loading States**: Loading indicator untuk sort operations
 
-- **Rounded Corners**: Modern card designs with subtle shadows
-- **Gradient Backgrounds**: Beautiful color transitions and modern schemes
-- **Typography**: Clean Poppins font with proper hierarchy
-- **Animations**: Smooth transitions and micro-interactions
-- **Layout**: Card-based layouts with proper spacing and alignment
-- **Material 3**: Latest Material Design principles and components
+### **BookCard**
+- **Cover Image**: Async image loading dengan Coil
+- **Book Info**: Title, author, year, publisher
+- **Favorite Button**: Heart icon dengan toggle functionality
+- **Click Handling**: Navigasi ke book details
 
-## 🔧 Configuration
+### **Loading & Error States**
+- **LoadingState**: Circular progress dengan message
+- **ErrorState**: Error display dengan retry button
+- **EmptyState**: Empty state dengan refresh option
 
-### Theme Switching
-Users can toggle between light and dark themes through the Settings screen:
-- **Light Theme**: Bright, clean interface
-- **Dark Theme**: Modern dark interface
-- **Persistent**: Theme choice is saved and restored
+## 🔄 State Management
 
-### Sort Options
-Sort books independently of search:
-- Click any sort option to immediately load books with that criteria
-- No search query required for sorting
-- Seamless integration with search when query is present
-- Real-time sorting with loading indicators
+### **ViewModel States**
+- **Search State**: Loading, Success, Error states
+- **Book List State**: Pagination dan load more
+- **Favorites State**: Local storage management
+- **UI State**: Search expanded, selected tab
 
-## 📱 Screenshots
+### **Data Flow**
+```
+User Input → ViewModel → Repository → API/Local → UI Update
+```
 
-The app features several key screens with modern design:
+### **Caching Strategy**
+- **API Cache**: 5-minute TTL untuk referenced data
+- **Local Storage**: Room database untuk favorites
+- **Memory Cache**: In-memory caching untuk performance
 
-- **Home Screen**: Modern search interface with tab navigation and initial book display
-- **Search Results**: Beautiful book cards with cover images and manual pagination
-- **Book Details**: Comprehensive book information display with cover images
-- **Favorites**: Personal book collection with offline access
-- **Settings**: Theme preferences with modern interface
+## 📱 User Experience
 
-## 🔍 Search & Navigation Features
+### **Search Flow**
+1. **Initial State**: Search bar collapsed (hanya icon)
+2. **Expand**: Klik icon search → search bar expand horizontal
+3. **Input**: User ketik query → real-time search
+4. **Results**: Book list update dengan search results
+5. **Collapse**: Klik icon close → search bar collapse
 
-### Smart Search
-- **Instant Display**: Popular books shown immediately without search
-- **Real-time Search**: Search as you type with instant results
-- **Clear Search**: Easy return to popular books display
-- **Sort Integration**: Search results respect selected sort options
-- **Pagination**: Manual pagination for search results
+### **Navigation Flow**
+1. **Home Screen**: Search bar + 2 tabs (Book List, Favorites)
+2. **Book List**: Infinite scroll dengan load more
+3. **Book Details**: Comprehensive book information
+4. **Settings**: Theme toggle dan preferences
 
-### Navigation
-- **Smooth Transitions**: Seamless navigation between screens
-- **Book Details**: Full book information with cover images
-- **Back Navigation**: Intuitive back button functionality
-- **Tab Navigation**: Easy switching between Search and Favorites
+### **Filter & Sort**
+1. **Search Expanded**: Filter section muncul otomatis
+2. **Sort Options**: Pilih sort criteria
+3. **Real-time Update**: Book list update sesuai sort
+4. **Persistent State**: Sort preference tersimpan
 
-## 🚀 Build Variants
+## 🚧 Troubleshooting
 
-The app supports standard build configurations:
+### **Common Issues**
+- **Force Close**: Pastikan ViewModel dependencies ter-setup dengan benar
+- **Search Not Working**: Cek internet connection dan API status
+- **Images Not Loading**: Verifikasi Coil configuration
+- **Build Errors**: Clean project dan sync Gradle
 
-- **Debug**: Development build with logging and debugging
-- **Release**: Production build with optimizations
+### **Debug Tips**
+- **Logcat**: Monitor log untuk error details
+- **Network Inspector**: Cek API calls dan responses
+- **Layout Inspector**: Debug UI layout issues
+- **Database Inspector**: Monitor Room database operations
 
 ## 🤝 Contributing
 
-We welcome contributions to improve BookFinder:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Make your changes** with proper code formatting
-4. **Add tests** if applicable for new functionality
-5. **Update documentation** to reflect changes
-6. **Submit a pull request** with detailed description
-
-### Contribution Guidelines
-
-- Follow Kotlin coding conventions
-- Use meaningful commit messages
-- Include tests for new features
-- Update documentation as needed
-- Follow Material Design principles
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
 
 ## 📄 License
 
@@ -261,22 +263,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Open Library](https://openlibrary.org/) for providing the comprehensive book data API
-- [Google Fonts](https://fonts.google.com/) for the beautiful Poppins font family
-- [Material Design](https://material.io/) for design guidelines and principles
-- [Jetpack Compose](https://developer.android.com/jetpack/compose) for modern Android UI development
-- [Android Developers](https://developer.android.com/) for platform guidance and best practices
-- Modern UI/UX design trends and inspiration from the design community
-- Contributors and users who provide feedback and suggestions
+- **OpenLibrary**: Free book data API
+- **Jetpack Compose**: Modern Android UI toolkit
+- **Material Design**: Design system guidelines
+- **Android Community**: Open source contributions
 
 ## 📞 Support
 
-If you encounter any issues or have questions:
-
-- **GitHub Issues**: Report bugs and request features
-- **Documentation**: Check this README for setup and usage
-- **Community**: Join discussions and share experiences
+- **Issues**: [GitHub Issues](https://github.com/yourusername/BookFinder/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/BookFinder/discussions)
+- **Email**: your.email@example.com
 
 ---
 
-**BookFinder** - Discover, explore, and manage your favorite books with style! 📚✨
+**BookFinder** - Discover the world of books with modern Android technology! 📚✨
