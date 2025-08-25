@@ -90,15 +90,7 @@ app/src/main/java/com/app/bookfinder/
    - Wait for Gradle sync to complete
    - Resolve any dependency issues if they arise
 
-4. **Font Setup (Required)**
-   Download Poppins fonts from [Google Fonts](https://fonts.google.com/specimen/Poppins) and place them in `app/src/main/res/font/`:
-   - `font_poppins_light.ttf`
-   - `font_poppins_regular.ttf`
-   - `font_poppins_medium.ttf`
-   - `font_poppins_semibold.ttf`
-   - `font_poppins_bold.ttf`
-
-5. **Build and Run**
+4. **Build and Run**
    - Connect an Android device or start an emulator
    - Click the "Run" button or press Shift+F10
 
@@ -236,14 +228,6 @@ The app features several key screens with modern design:
 - **Book Details**: Full book information with cover images
 - **Back Navigation**: Intuitive back button functionality
 - **Tab Navigation**: Easy switching between Search and Favorites
-
-## 🧪 Testing
-
-The app includes basic testing structure:
-
-- **Unit Tests**: Basic ViewModel and Repository testing setup
-- **UI Tests**: Compose UI testing setup with Espresso
-- **Test Coverage**: Basic test coverage for critical components
 
 ## 🚀 Build Variants
 
