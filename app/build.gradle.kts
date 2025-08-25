@@ -19,15 +19,70 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
+    // Enable buildConfig feature for custom fields
+    buildFeatures {
+        buildConfig = true
+    }
+
+    // Signing configuration
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore/release.keystore")
+            storePassword = "bookfinder123"
+            keyAlias = "bookfinder"
+            keyPassword = "bookfinder123"
+        }
+//        create("debug") {
+//            storeFile = file("keystore/debug.keystore")
+//            storePassword = "debug123"
+//            keyAlias = "bookfinder_debug"
+//            keyPassword = "debug123"
+//        }
+    }
+
+    // Build variants
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+            manifestPlaceholders["appName"] = "BookFinder"
+        }
+        debug {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            signingConfig = signingConfigs.getByName("debug")
+            manifestPlaceholders["appName"] = "BookFinder Dev"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
+    }
+
+    // Product flavors for dev/prod
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            manifestPlaceholders["appName"] = "BookFinder Dev"
+            buildConfigField("String", "BASE_URL", "\"https://openlibrary.org/\"")
+            buildConfigField("boolean", "ENABLE_LOGGING", "true")
+        }
+        create("prod") {
+            dimension = "environment"
+            manifestPlaceholders["appName"] = "BookFinder"
+            buildConfigField("String", "BASE_URL", "\"https://openlibrary.org/\"")
+            buildConfigField("boolean", "ENABLE_LOGGING", "false")
         }
     }
     compileOptions {
