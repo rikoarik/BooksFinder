@@ -28,8 +28,7 @@ fun BookFinderNavigation(
     bookViewModel: BookViewModel,
     bookRepository: BookRepository,
     userPreferences: UserPreferences,
-    onThemeChange: (Boolean) -> Unit,
-    onLanguageChange: (String) -> Unit
+    onThemeChange: (Boolean) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -88,7 +87,6 @@ fun BookFinderNavigation(
             SettingsScreen(
                 userPreferences = userPreferences,
                 onThemeChange = onThemeChange,
-                onLanguageChange = onLanguageChange,
                 onBackClick = {
                     println("DEBUG: Settings back clicked")
                     navController.popBackStack()

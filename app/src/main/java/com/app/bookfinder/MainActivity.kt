@@ -90,11 +90,6 @@ fun BookFinderApp() {
                     coroutineScope.launch {
                         userPreferences.updateDarkMode(isDark)
                     }
-                },
-                onLanguageChange = { language ->
-                    coroutineScope.launch {
-                        userPreferences.updateLanguage(language)
-                    }
                 }
             )
         }

@@ -22,7 +22,6 @@ import com.app.bookfinder.data.preferences.UserPreferences
 fun SettingsScreen(
     userPreferences: UserPreferences,
     onThemeChange: (Boolean) -> Unit,
-    onLanguageChange: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -131,7 +130,6 @@ fun SettingsScreenPreview() {
                 language = "en"
             ),
             onThemeChange = {},
-            onLanguageChange = {},
             onBackClick = {}
         )
     }
@@ -147,7 +145,6 @@ fun SettingsScreenDarkPreview() {
                 language = "id"
             ),
             onThemeChange = {},
-            onLanguageChange = {},
             onBackClick = {}
         )
     }

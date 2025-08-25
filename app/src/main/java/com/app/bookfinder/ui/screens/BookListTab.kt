@@ -89,8 +89,8 @@ fun BookListTab(
                         BookCard(
                             book = book,
                             onBookClick = {
-                                val route = Screen.BookDetail.createRoute(book.key)
-                                onBookClick(route)
+                                println("DEBUG: BookListTab - Book clicked with key: ${book.key}")
+                                onBookClick(book.key)
                             },
                             onFavoriteClick = onFavoriteClick
                         )
