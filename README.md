@@ -1,6 +1,6 @@
 # BookFinder - Android App
 
-A modern Android application built with Kotlin, Jetpack Compose, and Material 3 design that allows users to search for books using the Open Library API and manage their favorite books. The app features a beautiful, modern UI inspired by contemporary design trends with support for dark/light themes and multiple languages.
+A modern Android application built with Kotlin, Jetpack Compose, and Material 3 design that allows users to search for books using the Open Library API and manage their favorite books. The app features a beautiful, modern UI inspired by contemporary design trends with support for dark/light themes.
 
 ## ✨ Features
 
@@ -12,10 +12,9 @@ A modern Android application built with Kotlin, Jetpack Compose, and Material 3 
 - **📖 Book Details**: Comprehensive book information including cover, description, publisher, ISBN, and subjects
 - **🎨 Modern UI**: Clean, Material 3 design with Jetpack Compose and custom Poppins typography
 - **🌙 Dark/Light Theme**: Toggle between dark and light themes with persistent preferences
-- **🌍 Multi-Language**: Support for English and Indonesian languages
 - **📱 Offline Support**: View your favorite books even without internet connection
 - **🎯 Responsive Design**: Optimized for different screen sizes and orientations
-- **⚙️ Settings**: Easy access to theme and language preferences
+- **⚙️ Settings**: Easy access to theme preferences
 - **🚀 Performance Optimized**: Fast loading with optimized page size and efficient data management
 
 ## 🏗️ Architecture
@@ -26,7 +25,7 @@ The app follows the **MVVM (Model-View-ViewModel)** architecture pattern with cl
 - **Domain Layer**: Business logic and data models with Resource sealed class for state management
 - **Presentation Layer**: Jetpack Compose UI with ViewModels and StateFlow
 - **State Management**: Resource sealed class for loading, success, and error states
-- **Preferences**: DataStore for theme and language settings persistence
+- **Preferences**: DataStore for theme settings persistence
 - **Manual Paging**: Custom pagination implementation without external libraries
 
 ## 🛠️ Tech Stack
@@ -107,15 +106,6 @@ app/src/main/java/com/app/bookfinder/
 
 If you prefer not to download the Poppins fonts, you can modify `app/src/main/java/com/app/bookfinder/ui/theme/Type.kt` to use the system default font by replacing `Poppins` with `FontFamily.Default`.
 
-## 🌐 Localization
-
-The app supports multiple languages with easy switching:
-
-- **English** (default) - Primary language
-- **Indonesian** (Bahasa Indonesia) - Localized content
-
-Users can switch languages through the Settings screen, and all text will be automatically updated throughout the app.
-
 ## 🎨 Theme System
 
 The app features a sophisticated theme system with Material 3:
@@ -171,7 +161,6 @@ Smart sorting options that work independently of search:
 ### Settings Screen
 Elegant settings interface for user preferences:
 - Theme switching (Light/Dark/System)
-- Language selection (English/Indonesian)
 - Modern card-based design
 - Persistent preference storage
 
@@ -217,13 +206,6 @@ Users can toggle between light and dark themes through the Settings screen:
 - **System Theme**: Follows device theme preference
 - **Persistent**: Theme choice is saved and restored
 
-### Language Switching
-Support for multiple languages with easy switching:
-- **English**: Primary language with full localization
-- **Indonesian**: Complete Bahasa Indonesia support
-- **Instant Update**: Language changes apply immediately
-- **Persistent**: Language choice is saved
-
 ### Sort Options
 Sort books independently of search:
 - Click any sort option to immediately load books with that criteria
@@ -239,7 +221,7 @@ The app features several key screens with modern design:
 - **Search Results**: Beautiful book cards with cover images and manual pagination
 - **Book Details**: Comprehensive book information display with cover images
 - **Favorites**: Personal book collection with offline access
-- **Settings**: Theme and language preferences with modern interface
+- **Settings**: Theme preferences with modern interface
 
 ## 🔍 Search & Navigation Features
 
