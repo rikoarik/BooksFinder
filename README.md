@@ -24,7 +24,6 @@ A modern Android application built with Jetpack Compose for searching and discov
 ### ⚙️ **Settings & Configuration**
 - **Settings Button**: Icon settings (⚙️) di top bar untuk akses cepat
 - **Theme Toggle**: Switch antara light dan dark mode
-- **Language Support**: Multi-language support (English & Indonesian)
 - **User Preferences**: Persistent settings dengan DataStore
 
 ### 📖 **Book Management**
@@ -267,13 +266,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Jetpack Compose**: Modern Android UI toolkit
 - **Material Design**: Design system guidelines
 - **Android Community**: Open source contributions
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/BookFinder/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/BookFinder/discussions)
-- **Email**: your.email@example.com
-
 ---
 
 **BookFinder** - Discover the world of books with modern Android technology! 📚✨
