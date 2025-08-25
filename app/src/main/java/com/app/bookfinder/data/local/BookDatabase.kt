@@ -36,7 +36,6 @@ abstract class BookDatabase : RoomDatabase() {
 class Converters {
     private val gson = Gson()
     
-    // Author list converters
     @TypeConverter
     fun fromAuthorList(value: List<Author>?): String? {
         return value?.let { gson.toJson(it) }
@@ -50,7 +49,6 @@ class Converters {
         }
     }
     
-    // String list converters
     @TypeConverter
     fun fromStringList(value: List<String>?): String? {
         return value?.let { gson.toJson(it) }
@@ -64,7 +62,6 @@ class Converters {
         }
     }
     
-    // Int list converters
     @TypeConverter
     fun fromIntList(value: List<Int>?): String? {
         return value?.let { gson.toJson(it) }

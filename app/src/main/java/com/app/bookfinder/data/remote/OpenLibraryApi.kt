@@ -12,7 +12,7 @@ interface OpenLibraryApi {
         @Query("q") query: String,
         @Query("fields") fields: String = "key,title,author_name,first_publish_year,publisher,isbn,cover_i,subject",
         @Query("limit") limit: Int = 20,
-        @Query("offset") offset: Int = 0, // Use offset instead of page for OpenLibrary API
+        @Query("offset") offset: Int = 0,
         @Query("language") language: String? = null,
         @Query("sort") sort: String? = null
     ): SearchResponse
@@ -20,25 +20,21 @@ interface OpenLibraryApi {
     @GET("works/{workId}.json")
     suspend fun getWorkDetail(@Path("workId") workId: String): WorkDetail
     
-    // Author search API - more efficient than individual calls
     @GET("search/authors.json")
     suspend fun searchAuthors(
         @Query("q") query: String,
         @Query("limit") limit: Int = 50
     ): AuthorSearchResponse
     
-    // Batch author request using search API with key filter
     @GET("search/authors.json")
     suspend fun getAuthorsBatch(
-        @Query("q") keyFilter: String, // e.g., "key:(/authors/OL23919A OR /authors/OL1394244A)"
+        @Query("q") keyFilter: String,
         @Query("limit") limit: Int = 100
     ): AuthorSearchResponse
     
-    // Individual author detail
     @GET("authors/{authorId}.json")
     suspend fun getAuthorDetail(@Path("authorId") authorId: String): AuthorDetailResponse
     
-    // Works by an author
     @GET("authors/{authorId}/works.json")
     suspend fun getAuthorWorks(
         @Path("authorId") authorId: String,

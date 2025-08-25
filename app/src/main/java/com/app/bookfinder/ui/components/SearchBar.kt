@@ -50,7 +50,6 @@ fun SearchBar(
     val focusRequester = remember { FocusRequester() }
     val hapticFeedback = LocalHapticFeedback.current
     
-    // Animated scale for toggle button
     val toggleScale by animateFloatAsState(
         targetValue = if (isExpanded) 1f else 0.8f,
         animationSpec = tween(200),
@@ -61,7 +60,6 @@ fun SearchBar(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Toggle button to expand/collapse search
         if (onToggleExpanded != null) {
             IconButton(
                 onClick = {
@@ -81,7 +79,6 @@ fun SearchBar(
             }
         }
         
-        // Animated search field
         AnimatedVisibility(
             visible = isExpanded,
             enter = expandHorizontally(
@@ -162,7 +159,6 @@ fun SearchBar(
         }
     }
     
-    // Auto-focus when expanded
     LaunchedEffect(isExpanded) {
         if (isExpanded) {
             focusRequester.requestFocus()
@@ -184,7 +180,7 @@ fun SearchBarPreview() {
             SearchBar(
                 query = query,
                 onQueryChange = { query = it },
-                onSearch = { /* Preview */ },
+                onSearch = { },
                 isExpanded = isExpanded,
                 onToggleExpanded = { isExpanded = !isExpanded }
             )

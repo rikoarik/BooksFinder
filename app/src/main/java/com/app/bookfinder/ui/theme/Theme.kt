@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Modern Light Theme inspired by Dribbble design
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF6366F1), // Indigo
     onPrimary = Color.White,

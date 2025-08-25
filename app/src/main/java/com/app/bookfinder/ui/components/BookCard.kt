@@ -56,7 +56,6 @@ fun BookCard(
                     .padding(16.dp),
                 verticalAlignment = Alignment.Top
             ) {
-                // Book cover with shadow
                 Card(
                     modifier = Modifier.size(80.dp),
                     shape = RoundedCornerShape(12.dp),
@@ -72,7 +71,6 @@ fun BookCard(
                 
                 Spacer(modifier = Modifier.width(16.dp))
                 
-                // Book info
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -104,7 +102,6 @@ fun BookCard(
                     }
                 }
                 
-                // Favorite button
                 IconButton(
                     onClick = { onFavoriteClick(book) },
                     modifier = Modifier.align(Alignment.Top)

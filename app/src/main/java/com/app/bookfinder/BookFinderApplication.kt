@@ -7,7 +7,6 @@ class BookFinderApplication : Application() {
     
     override fun onCreate() {
         super.onCreate()
-        // Initialize database
         BookDatabase.getDatabase(this)
     }
 }

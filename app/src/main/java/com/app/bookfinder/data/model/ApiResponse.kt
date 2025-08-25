@@ -39,7 +39,6 @@ data class WorkDetail(
     val subjects: List<String>? = null,
     @SerializedName("covers")
     val coverIds: List<Int>? = null,
-    // Additional fields from OpenLibrary API
     @SerializedName("table_of_contents")
     val tableOfContents: List<String>? = null,
     @SerializedName("edition_name")
@@ -63,7 +62,6 @@ data class WorkDetail(
     val copyrightDate: String? = null,
     @SerializedName("work_titles")
     val workTitles: List<String>? = null,
-    // New fields from the API response
     @SerializedName("subject_places")
     val subjectPlaces: List<String>? = null,
     @SerializedName("subject_people")
@@ -96,20 +94,16 @@ data class DateTimeInfo(
     val type: String,
     val value: String
 ) {
-    // Helper function to get formatted date
     fun getFormattedDate(): String {
         return try {
-            // Parse ISO 8601 format and format it nicely
             val instant = java.time.Instant.parse(value)
             val localDateTime = java.time.LocalDateTime.ofInstant(instant, java.time.ZoneId.systemDefault())
             localDateTime.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' HH:mm"))
         } catch (e: Exception) {
-            // Fallback to original value if parsing fails
             value
         }
     }
     
-    // Helper function to get just the date part
     fun getDateOnly(): String {
         return try {
             val instant = java.time.Instant.parse(value)
@@ -226,7 +220,6 @@ data class EditionDetailResponse(
     val last_modified: DateTimeInfo?
 )
 
-// Data class to hold all referenced data
 data class ReferencedData(
     val authors: MutableMap<String, AuthorDetailResponse> = mutableMapOf(),
     val subjects: MutableMap<String, SubjectDetailResponse> = mutableMapOf(),
@@ -237,7 +230,6 @@ data class ReferencedData(
     val editions: MutableMap<String, EditionDetailResponse> = mutableMapOf()
 )
 
-// Author search response
 data class AuthorSearchResponse(
     val numFound: Int,
     val start: Int,
@@ -258,7 +250,6 @@ data class AuthorSearchDoc(
     val _version_: Long?
 )
 
-// Author works response
 data class AuthorWorksResponse(
     val links: List<AuthorWorkLink>?,
     val size: Int?,

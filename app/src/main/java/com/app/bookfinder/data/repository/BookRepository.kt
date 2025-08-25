@@ -15,7 +15,6 @@ class BookRepository(
     private val api: OpenLibraryApi,
     private val bookDao: BookDao
 ) {
-    // Simple in-memory cache to avoid repeated API calls
     private val authorCache = mutableMapOf<String, AuthorDetailResponse>()
     private val subjectCache = mutableMapOf<String, SubjectDetailResponse>()
     private val placeCache = mutableMapOf<String, PlaceDetailResponse>()
@@ -23,7 +22,6 @@ class BookRepository(
     private val timeCache = mutableMapOf<String, TimeDetailResponse>()
     private val publisherCache = mutableMapOf<String, PublisherDetailResponse>()
     
-    // Cache TTL: 5 minutes
     private val cacheExpiry = 5 * 60 * 1000L
     private val cacheTimestamps = mutableMapOf<String, Long>()
     
@@ -36,12 +34,10 @@ class BookRepository(
         cacheTimestamps[key] = System.currentTimeMillis()
     }
     
-    // Helper function to extract key from URL
     private fun extractKeyFromUrl(url: String): String {
         return url.removePrefix("/").removeSuffix(".json")
     }
     
-    // Helper function to fetch all referenced data
     private suspend fun fetchReferencedData(workDetail: WorkDetail): ReferencedData {
         val referencedData = ReferencedData()
         var completedItems = 0
@@ -54,15 +50,12 @@ class BookRepository(
         
         if (totalItems == 0) return referencedData
         
-        // Use coroutineScope to properly handle async operations
         return kotlinx.coroutines.coroutineScope {
             val deferredCalls = mutableListOf<kotlinx.coroutines.Deferred<Unit>>()
             
-            // OPTIMIZATION: Fetch all authors in one batch request instead of individual calls
             if (workDetail.authors?.isNotEmpty() == true) {
                 val deferred = async {
                     try {
-                        // Build key filter for batch request: "key:(/authors/OL23919A OR /authors/OL1394244A)"
                         val authorKeys = workDetail.authors.map { author ->
                             val authorKey = extractKeyFromUrl(author.author.key)
                             "/authors/$authorKey"
@@ -73,7 +66,6 @@ class BookRepository(
                             
                             val authorBatch = api.getAuthorsBatch(keyFilter, authorKeys.size)
                             
-                            // Map batch response to individual authors
                             authorBatch.docs.forEach { authorDoc ->
                                 val authorKey = authorDoc.key.substringAfter("/authors/")
                                 
@@ -93,7 +85,6 @@ class BookRepository(
                                     last_modified = null
                                 )
                                 
-                                // Update cache
                                 authorCache[authorKey] = authorDetail
                                 updateCache(authorKey)
                                 referencedData.authors[authorKey] = authorDetail
@@ -101,11 +92,9 @@ class BookRepository(
                         }
                         completedItems += workDetail.authors.size
                     } catch (e: Exception) {
-                        // Fallback to individual calls if batch fails
                         workDetail.authors.forEach { author ->
                             val authorKey = extractKeyFromUrl(author.author.key)
                             try {
-                                // Check cache first
                                 if (authorCache.containsKey(authorKey) && isCacheValid(authorKey)) {
                                     referencedData.authors[authorKey] = authorCache[authorKey]!!
                                     return@forEach
@@ -116,7 +105,6 @@ class BookRepository(
                                 updateCache(authorKey)
                                 referencedData.authors[authorKey] = authorDetail
                             } catch (e: Exception) {
-                                // Skip if author fetch fails
                             }
                         }
                         completedItems += workDetail.authors.size
@@ -125,13 +113,11 @@ class BookRepository(
                 deferredCalls.add(deferred)
             }
             
-            // Fetch subject details in parallel
             workDetail.subjects?.forEach { subject ->
                 val deferred = async {
                     try {
                         val subjectKey = extractKeyFromUrl(subject)
                         
-                        // Check cache first
                         if (subjectCache.containsKey(subjectKey) && isCacheValid(subjectKey)) {
                             referencedData.subjects[subjectKey] = subjectCache[subjectKey]!!
                             completedItems++
@@ -150,13 +136,11 @@ class BookRepository(
                 deferredCalls.add(deferred)
             }
             
-            // Fetch place details in parallel
             workDetail.subjectPlaces?.forEach { place ->
                 val deferred = async {
                     try {
                         val placeKey = extractKeyFromUrl(place)
                         
-                        // Check cache first
                         if (placeCache.containsKey(placeKey) && isCacheValid(placeKey)) {
                             referencedData.places[placeKey] = placeCache[placeKey]!!
                             completedItems++
@@ -175,13 +159,11 @@ class BookRepository(
                 deferredCalls.add(deferred)
             }
             
-            // Fetch person details in parallel
             workDetail.subjectPeople?.forEach { person ->
                 val deferred = async {
                     try {
                         val personKey = extractKeyFromUrl(person)
                         
-                        // Check cache first
                         if (personCache.containsKey(personKey) && isCacheValid(personKey)) {
                             referencedData.people[personKey] = personCache[personKey]!!
                             completedItems++
@@ -200,13 +182,11 @@ class BookRepository(
                 deferredCalls.add(deferred)
             }
             
-            // Fetch time details in parallel
             workDetail.subjectTimes?.forEach { time ->
                 val deferred = async {
                     try {
                         val timeKey = extractKeyFromUrl(time)
                         
-                        // Check cache first
                         if (timeCache.containsKey(timeKey) && isCacheValid(timeKey)) {
                             referencedData.times[timeKey] = timeCache[timeKey]!!
                             completedItems++
@@ -225,13 +205,11 @@ class BookRepository(
                 deferredCalls.add(deferred)
             }
             
-            // Fetch publisher details in parallel
             workDetail.publishers?.forEach { publisher ->
                 val deferred = async {
                     try {
-                        val publisherKey = publisher.name // Publisher doesn't have key, use name as identifier
+                        val publisherKey = publisher.name
                         
-                        // Check cache first
                         if (publisherCache.containsKey(publisherKey) && isCacheValid(publisherKey)) {
                             referencedData.publishers[publisherKey] = publisherCache[publisherKey]!!
                             completedItems++
@@ -250,7 +228,6 @@ class BookRepository(
                 deferredCalls.add(deferred)
             }
             
-            // Wait for all parallel calls to complete
             deferredCalls.awaitAll()
             
             referencedData
@@ -265,13 +242,12 @@ class BookRepository(
     ): Flow<Resource<List<Book>>> = flow {
         emit(Resource.Loading)
         try {
-            // Calculate offset based on page number (OpenLibrary API uses offset)
             val offset = (page - 1) * 20
             
             val response = api.searchBooks(
                 query = query,
-                offset = offset, // Use offset instead of page
-                limit = 20, // Fixed page size for manual loading
+                offset = offset,
+                limit = 20,
                 language = if (language.code.isNotEmpty()) language.code else null,
                 sort = sort.apiValue
             )
@@ -300,29 +276,21 @@ class BookRepository(
     fun getWorkDetail(workId: String): Flow<Resource<Book>> = flow {
         emit(Resource.Loading)
         try {
-            // Clean workId by removing "works/" prefix if present
             val cleanWorkId = workId.removePrefix("works/")
             
             val workDetail = api.getWorkDetail(cleanWorkId)
             
-            // Fetch all referenced data automatically
             val referencedData = fetchReferencedData(workDetail)
             
-            // Build author names from referenced data with better fallback logic
             val authorNames = workDetail.authors?.mapNotNull { author ->
                 val authorKey = extractKeyFromUrl(author.author.key)
                 val authorDetail = referencedData.authors[authorKey]
                 
-                // Try multiple fallback strategies for author names
                 val authorName = when {
-                    // First priority: fetched author detail name
                     authorDetail?.name != null -> authorDetail.name
-                    // Second priority: original author name from work detail
                     author.author.name != null -> author.author.name
-                    // Third priority: try to extract from author key (remove prefix and format nicely)
                     else -> {
                         val cleanKey = authorKey.removePrefix("authors/")
-                        // Try to make it more readable by removing OL prefix if present
                         if (cleanKey.startsWith("OL")) {
                             "Author $cleanKey"
                         } else {
@@ -342,7 +310,7 @@ class BookRepository(
                 authorNames = authorNames,
                 firstPublishedYear = workDetail.firstPublishDate?.substringBefore("-")?.toIntOrNull(),
                 publisher = workDetail.publishers?.firstOrNull()?.let { publisher ->
-                    val publisherKey = publisher.name // Publisher doesn't have key, use name as identifier
+                    val publisherKey = publisher.name
                     referencedData.publishers[publisherKey]?.name ?: publisher.name
                 },
                 isbn = (workDetail.isbn13 ?: workDetail.isbn10)?.firstOrNull(),
@@ -353,7 +321,6 @@ class BookRepository(
                     referencedData.subjects[subjectKey]?.name ?: subject
                 } ?: emptyList(),
                 isFavorite = isFavorite,
-                // Additional fields
                 tableOfContents = workDetail.tableOfContents ?: emptyList(),
                 editionName = workDetail.editionName,
                 numberOfPages = workDetail.numberOfPages,
@@ -366,7 +333,6 @@ class BookRepository(
                 publishPlaces = workDetail.publishPlaces ?: emptyList(),
                 copyrightDate = workDetail.copyrightDate,
                 workTitles = workDetail.workTitles ?: emptyList(),
-                // New fields from API response with enhanced data
                 subjectPlaces = workDetail.subjectPlaces?.mapNotNull { place ->
                     val placeKey = extractKeyFromUrl(place)
                     referencedData.places[placeKey]?.name ?: place
@@ -384,7 +350,6 @@ class BookRepository(
                 revision = workDetail.revision,
                 created = workDetail.created?.value,
                 lastModified = workDetail.lastModified?.value,
-                // Store original author information
                 authors = workDetail.authors ?: emptyList()
             )
             emit(Resource.Success(book))

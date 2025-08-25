@@ -52,14 +52,12 @@ fun BookFinderApp() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     
-    // Initialize dependencies
     val bookDatabase = BookDatabase.getDatabase(context)
     val bookRepository = BookRepository(
         api = RetrofitClient.openLibraryApi,
         bookDao = bookDatabase.bookDao()
     )
     
-    // User preferences
     val userPreferences = remember {
         UserPreferencesRepository(context.dataStore)
     }
@@ -68,12 +66,10 @@ fun BookFinderApp() {
         initial = UserPreferences()
     )
     
-    // ViewModels
     val bookViewModel: BookViewModel = viewModel {
         BookViewModel(bookRepository)
     }
     
-    // Theme based on preferences
     val isDarkTheme = userPreferencesState.isDarkMode
     
     BookFinderTheme(darkTheme = isDarkTheme) {
@@ -96,7 +92,6 @@ fun BookFinderApp() {
     }
 }
 
-// Simple UserPreferencesRepository implementation
 class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     
     private val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")

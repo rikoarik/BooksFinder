@@ -47,7 +47,6 @@ fun FilterSection(
         Column(
             modifier = Modifier.padding(20.dp)
         ) {
-            // Sort Options Header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -71,7 +70,6 @@ fun FilterSection(
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // Sort Options
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {

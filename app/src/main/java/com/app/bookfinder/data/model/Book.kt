@@ -17,7 +17,6 @@ data class Book(
     val description: String? = null,
     val subjects: List<String> = emptyList(),
     val isFavorite: Boolean = false,
-    // Additional fields from WorkDetail
     val tableOfContents: List<String> = emptyList(),
     val editionName: String? = null,
     val numberOfPages: Int? = null,
@@ -30,7 +29,6 @@ data class Book(
     val publishPlaces: List<String> = emptyList(),
     val copyrightDate: String? = null,
     val workTitles: List<String> = emptyList(),
-    // New fields from API response
     val subjectPlaces: List<String> = emptyList(),
     val subjectPeople: List<String> = emptyList(),
     val subjectTimes: List<String> = emptyList(),
@@ -39,7 +37,6 @@ data class Book(
     val revision: Int? = null,
     val created: String? = null,
     val lastModified: String? = null,
-    // Store original author information
     val authors: List<Author> = emptyList()
 ) {
     fun getAuthorDisplayName(): String {
@@ -136,7 +133,6 @@ data class Book(
         }
     }
     
-    // Helper function to check if book has meaningful content
     fun hasAdditionalInfo(): Boolean {
         return !description.isNullOrBlank() ||
                !publisher.isNullOrBlank() ||

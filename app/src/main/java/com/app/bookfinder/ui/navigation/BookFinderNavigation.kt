@@ -48,7 +48,6 @@ fun BookFinderNavigation(
             val workId = backStackEntry.arguments?.getString("workId")
             
             if (workId != null) {
-                // workId now contains just the ID part (e.g., "OL45361W"), so we need to add "works/" prefix
                 val fullWorkId = "works/$workId"
                 
                 val bookDetailViewModel: BookDetailViewModel = viewModel(
@@ -64,7 +63,6 @@ fun BookFinderNavigation(
                     }
                 )
             } else {
-                // Handle case when workId is null
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

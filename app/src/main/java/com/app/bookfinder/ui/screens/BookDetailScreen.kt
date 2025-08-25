@@ -90,7 +90,7 @@ fun BookDetailScreen(
                             Icon(
                                 imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                                 contentDescription = if (isFavorite) stringResource(R.string.action_remove_favorite) else stringResource(R.string.action_add_favorite),
-                                tint = MaterialTheme.colorScheme.onPrimary, // Always use onPrimary to match topbar
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(24.dp)
                             )
                         }

@@ -8,7 +8,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.app.bookfinder.R
 
-// Poppins font family
 val Poppins = FontFamily(
     Font(R.font.font_poppins_light, FontWeight.Light),
     Font(R.font.font_poppins_regular, FontWeight.Normal),
@@ -17,7 +16,6 @@ val Poppins = FontFamily(
     Font(R.font.font_poppins_bold, FontWeight.Bold)
 )
 
-// Typography using Poppins font family
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = Poppins,
