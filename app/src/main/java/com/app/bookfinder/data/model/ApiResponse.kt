@@ -1,5 +1,7 @@
 package com.app.bookfinder.data.model
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.gson.annotations.SerializedName
 
 data class SearchResponse(
@@ -104,6 +106,7 @@ data class DateTimeInfo(
         }
     }
     
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun getDateOnly(): String {
         return try {
             val instant = java.time.Instant.parse(value)
