@@ -1,11 +1,16 @@
 package com.app.bookfinder.data.local
 
 import androidx.room.*
+import com.app.bookfinder.data.model.Author
 import com.app.bookfinder.data.model.Book
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-@Database(entities = [Book::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Book::class],
+    version = 1,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
 abstract class BookDatabase : RoomDatabase() {
     abstract fun bookDao(): BookDao
@@ -29,14 +34,47 @@ abstract class BookDatabase : RoomDatabase() {
 }
 
 class Converters {
+    private val gson = Gson()
+    
+    // Author list converters
     @TypeConverter
-    fun fromString(value: String): List<String> {
-        val listType = object : TypeToken<List<String>>() {}.type
-        return Gson().fromJson(value, listType) ?: emptyList()
+    fun fromAuthorList(value: List<Author>?): String? {
+        return value?.let { gson.toJson(it) }
     }
     
     @TypeConverter
-    fun fromList(list: List<String>): String {
-        return Gson().toJson(list)
+    fun toAuthorList(value: String?): List<Author>? {
+        return value?.let {
+            val type = object : TypeToken<List<Author>>() {}.type
+            gson.fromJson(it, type)
+        }
+    }
+    
+    // String list converters
+    @TypeConverter
+    fun fromStringList(value: List<String>?): String? {
+        return value?.let { gson.toJson(it) }
+    }
+    
+    @TypeConverter
+    fun toStringList(value: String?): List<String>? {
+        return value?.let {
+            val type = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(it, type)
+        }
+    }
+    
+    // Int list converters
+    @TypeConverter
+    fun fromIntList(value: List<Int>?): String? {
+        return value?.let { gson.toJson(it) }
+    }
+    
+    @TypeConverter
+    fun toIntList(value: String?): List<Int>? {
+        return value?.let {
+            val type = object : TypeToken<List<Int>>() {}.type
+            gson.fromJson(it, type)
+        }
     }
 }
