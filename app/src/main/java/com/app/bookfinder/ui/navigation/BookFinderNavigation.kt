@@ -36,17 +36,8 @@ fun BookFinderNavigation(
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
-                viewModel = bookViewModel,
-                onBookClick = { workId ->
-                    println("DEBUG: Book clicked with workId: $workId")
-                    val route = Screen.BookDetail.createRoute(workId)
-                    println("DEBUG: Navigating to route: $route")
-                    navController.navigate(route)
-                },
-                onSettingsClick = {
-                    println("DEBUG: Settings clicked")
-                    navController.navigate(Screen.Settings.route)
-                }
+                navController = navController,
+                viewModel = bookViewModel
             )
         }
         
@@ -55,24 +46,24 @@ fun BookFinderNavigation(
             arguments = Screen.BookDetail.arguments
         ) { backStackEntry ->
             val workId = backStackEntry.arguments?.getString("workId")
-            println("DEBUG: BookDetail route entered with workId: $workId")
             
             if (workId != null) {
+                // workId now contains just the ID part (e.g., "OL45361W"), so we need to add "works/" prefix
+                val fullWorkId = "works/$workId"
+                
                 val bookDetailViewModel: BookDetailViewModel = viewModel(
                     factory = BookDetailViewModelFactory(
                         repository = bookRepository,
-                        workId = workId
+                        workId = fullWorkId
                     )
                 )
                 BookDetailScreen(
                     viewModel = bookDetailViewModel,
                     onBackClick = {
-                        println("DEBUG: Back button clicked")
                         navController.popBackStack()
                     }
                 )
             } else {
-                println("DEBUG: workId is null, showing error")
                 // Handle case when workId is null
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -88,7 +79,6 @@ fun BookFinderNavigation(
                 userPreferences = userPreferences,
                 onThemeChange = onThemeChange,
                 onBackClick = {
-                    println("DEBUG: Settings back clicked")
                     navController.popBackStack()
                 }
             )
