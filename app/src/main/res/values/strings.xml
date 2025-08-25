@@ -4,6 +4,9 @@
     <!-- Navigation -->
     <string name="nav_search">Search</string>
     <string name="nav_favorites">Favorites</string>
+    <string name="tab_search">Search</string>
+    <string name="tab_book_list">Book List</string>
+    <string name="tab_favorites">Favorites</string>
     
     <!-- Search -->
     <string name="search_placeholder">Search books…</string>
