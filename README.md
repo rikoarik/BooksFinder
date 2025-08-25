@@ -160,7 +160,7 @@ Smart sorting options that work independently of search:
 
 ### Settings Screen
 Elegant settings interface for user preferences:
-- Theme switching (Light/Dark/System)
+- Theme switching (Light/Dark)
 - Modern card-based design
 - Persistent preference storage
 
@@ -203,7 +203,6 @@ The app's modern design is inspired by contemporary UI/UX trends:
 Users can toggle between light and dark themes through the Settings screen:
 - **Light Theme**: Bright, clean interface
 - **Dark Theme**: Modern dark interface
-- **System Theme**: Follows device theme preference
 - **Persistent**: Theme choice is saved and restored
 
 ### Sort Options
@@ -236,25 +235,22 @@ The app features several key screens with modern design:
 - **Smooth Transitions**: Seamless navigation between screens
 - **Book Details**: Full book information with cover images
 - **Back Navigation**: Intuitive back button functionality
-- **Deep Linking**: Direct navigation to book details
 - **Tab Navigation**: Easy switching between Search and Favorites
 
 ## 🧪 Testing
 
-The app includes comprehensive testing:
+The app includes basic testing structure:
 
-- **Unit Tests**: ViewModel and Repository testing
-- **UI Tests**: Compose UI testing with Espresso
-- **Integration Tests**: End-to-end functionality testing
-- **Test Coverage**: Comprehensive test coverage for critical components
+- **Unit Tests**: Basic ViewModel and Repository testing setup
+- **UI Tests**: Compose UI testing setup with Espresso
+- **Test Coverage**: Basic test coverage for critical components
 
 ## 🚀 Build Variants
 
-The app supports multiple build configurations:
+The app supports standard build configurations:
 
 - **Debug**: Development build with logging and debugging
 - **Release**: Production build with optimizations
-- **Custom**: Configurable build variants for different environments
 
 ## 🤝 Contributing
 
