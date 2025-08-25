@@ -49,6 +49,9 @@ class BookViewModel(
     private val _isLoadingInitial = MutableStateFlow(true)
     val isLoadingInitial: StateFlow<Boolean> = _isLoadingInitial.asStateFlow()
 
+    private val _isLoadingMore = MutableStateFlow(false)
+    val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
+
     init {
         loadFavoriteBooks()
         loadInitialBooks()
@@ -101,64 +104,55 @@ class BookViewModel(
     }
 
     fun loadMoreBooks() {
-        if (!_hasMorePages.value) {
-            println("DEBUG: loadMoreBooks called but hasMorePages is false")
+        if (!_hasMorePages.value || _isLoadingMore.value) {
             return
         }
         
-        println("DEBUG: loadMoreBooks called - currentPage: ${_currentPage.value}, hasMorePages: ${_hasMorePages.value}")
+        _isLoadingMore.value = true
+        val nextPage = _currentPage.value + 1
         
         viewModelScope.launch {
             try {
-                val query = _lastSearchQuery.value
-                val nextPage = _currentPage.value + 1
-                
-                println("DEBUG: Loading page $nextPage, query: '$query'")
-                
-                if (query.isNotEmpty()) {
-                    // Load more for search results
-                    _currentPage.value = nextPage
-                    repository.searchBooks(query, nextPage, _selectedLanguage.value, _selectedSort.value)
-                        .collect { resource ->
-                            if (resource is Resource.Success) {
-                                val updated = _allBooks.value + resource.data
-                                _allBooks.value = updated
-                                _books.value = Resource.Success(updated)
-                                _hasMorePages.value = resource.data.size >= 20
-                                println("DEBUG: Search load more success - new total: ${updated.size}, hasMorePages: ${_hasMorePages.value}")
-                            } else {
-                                _hasMorePages.value = false
-                                println("DEBUG: Search load more failed")
-                            }
-                        }
+                val query = _searchQuery.value
+                val result = if (query.isNotEmpty()) {
+                    repository.searchBooks(
+                        query = query,
+                        page = nextPage,
+                        language = _selectedLanguage.value,
+                        sort = _selectedSort.value
+                    )
                 } else {
-                    // Load more for initial books or books by sort
-                    val sortQuery = when (_selectedSort.value) {
-                        SortOption.NEW -> "popular"
-                        SortOption.OLD -> "classic"
-                        SortOption.RANDOM -> "random"
-                        SortOption.KEY -> "popular"
-                        else -> "popular"
-                    }
-                    
-                    _currentPage.value = nextPage
-                    repository.searchBooks(sortQuery, nextPage, _selectedLanguage.value, _selectedSort.value)
-                        .collect { resource ->
-                            if (resource is Resource.Success) {
-                                val updated = _allBooks.value + resource.data
-                                _allBooks.value = updated
+                    repository.searchBooks(
+                        query = "android programming",
+                        page = nextPage,
+                        language = _selectedLanguage.value,
+                        sort = _selectedSort.value
+                    )
+                }
+                
+                result.collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            val currentBooks = _books.value
+                            if (currentBooks is Resource.Success) {
+                                val updated = currentBooks.data + resource.data
                                 _books.value = Resource.Success(updated)
-                                _hasMorePages.value = resource.data.size >= 20
-                                println("DEBUG: Sort load more success - new total: ${updated.size}, hasMorePages: ${_hasMorePages.value}")
-                            } else {
-                                _hasMorePages.value = false
-                                println("DEBUG: Sort load more failed")
+                                _currentPage.value = nextPage
+                                _hasMorePages.value = resource.data.isNotEmpty()
                             }
                         }
+                        is Resource.Error -> {
+                            // Handle error silently for load more
+                        }
+                        is Resource.Loading -> {
+                            // Loading state already handled
+                        }
+                    }
                 }
             } catch (e: Exception) {
-                _hasMorePages.value = false
-                println("DEBUG: Load more error: ${e.message}")
+                // Handle error silently for load more
+            } finally {
+                _isLoadingMore.value = false
             }
         }
     }
