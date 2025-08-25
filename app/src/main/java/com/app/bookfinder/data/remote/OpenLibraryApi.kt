@@ -12,7 +12,7 @@ interface OpenLibraryApi {
         @Query("q") query: String,
         @Query("fields") fields: String = "key,title,author_name,first_publish_year,publisher,isbn,cover_i,subject",
         @Query("limit") limit: Int = 20,
-        @Query("page") page: Int = 1,
+        @Query("offset") offset: Int = 0, // Use offset instead of page for OpenLibrary API
         @Query("language") language: String? = null,
         @Query("sort") sort: String? = null
     ): SearchResponse

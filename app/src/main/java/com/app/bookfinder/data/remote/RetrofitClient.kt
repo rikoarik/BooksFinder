@@ -19,16 +19,15 @@ object RetrofitClient {
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
-                    .addHeader("User-Agent", "BookFinder/1.0.0 (https://github.com/yourusername/bookfinder; your.email@example.com)")
+                    .addHeader("User-Agent", "BookFinder/1.0.0 (https://github.com/rikoarik/bookfinder; rikoarik04@gmail.com)")
                     .build()
                 chain.proceed(request)
             }
-            .connectTimeout(15, TimeUnit.SECONDS) // Reduced from 30s to 15s
-            .readTimeout(20, TimeUnit.SECONDS)    // Reduced from 30s to 20s
-            .writeTimeout(15, TimeUnit.SECONDS)   // Reduced from 30s to 15s
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
             .build()
         
-        // Add logging interceptor only for debug builds
         return if (BuildConfig.ENABLE_LOGGING) {
             client.newBuilder().addInterceptor(loggingInterceptor).build()
         } else {

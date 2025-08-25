@@ -59,7 +59,6 @@ fun ErrorState(
     message: String,
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
-    isRefreshing: Boolean,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -218,7 +217,6 @@ fun ErrorStatePreview() {
             message = "Failed to load books. Please check your internet connection and try again.",
             onRetry = {},
             onRefresh = {},
-            isRefreshing = false
         )
     }
 }

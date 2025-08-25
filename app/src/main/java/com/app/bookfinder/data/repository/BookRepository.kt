@@ -52,8 +52,6 @@ class BookRepository(
                         (workDetail.subjectTimes?.size ?: 0) + 
                         (workDetail.publishers?.size ?: 0)
         
-        println("Starting fetchReferencedData: total items=$totalItems, authors=${workDetail.authors?.size}")
-        
         if (totalItems == 0) return referencedData
         
         // Use coroutineScope to properly handle async operations
@@ -64,27 +62,20 @@ class BookRepository(
             if (workDetail.authors?.isNotEmpty() == true) {
                 val deferred = async {
                     try {
-                        println("Attempting batch author fetch for ${workDetail.authors.size} authors")
-                        
                         // Build key filter for batch request: "key:(/authors/OL23919A OR /authors/OL1394244A)"
                         val authorKeys = workDetail.authors.map { author ->
                             val authorKey = extractKeyFromUrl(author.author.key)
                             "/authors/$authorKey"
                         }
                         
-                        println("Author keys for batch: $authorKeys")
-                        
                         if (authorKeys.isNotEmpty()) {
                             val keyFilter = "key:(${authorKeys.joinToString(" OR ")})"
-                            println("Batch filter: $keyFilter")
                             
                             val authorBatch = api.getAuthorsBatch(keyFilter, authorKeys.size)
-                            println("Batch response received: ${authorBatch.docs.size} authors")
                             
                             // Map batch response to individual authors
                             authorBatch.docs.forEach { authorDoc ->
                                 val authorKey = authorDoc.key.substringAfter("/authors/")
-                                println("Processing author doc: key=$authorKey, name=${authorDoc.name}")
                                 
                                 val authorDetail = AuthorDetailResponse(
                                     key = authorKey,
@@ -106,26 +97,17 @@ class BookRepository(
                                 authorCache[authorKey] = authorDetail
                                 updateCache(authorKey)
                                 referencedData.authors[authorKey] = authorDetail
-                                println("Added author to cache and referenced data: $authorKey -> ${authorDoc.name}")
                             }
                         }
                         completedItems += workDetail.authors.size
-                        println("Batch author fetch completed successfully")
                     } catch (e: Exception) {
-                        println("Batch author fetch failed: ${e.message}")
-                        e.printStackTrace()
-                        
                         // Fallback to individual calls if batch fails
-                        println("Falling back to individual author fetches")
                         workDetail.authors.forEach { author ->
                             val authorKey = extractKeyFromUrl(author.author.key)
                             try {
-                                println("Fetching individual author: $authorKey")
-                                
                                 // Check cache first
                                 if (authorCache.containsKey(authorKey) && isCacheValid(authorKey)) {
                                     referencedData.authors[authorKey] = authorCache[authorKey]!!
-                                    println("Using cached author: $authorKey -> ${authorCache[authorKey]?.name}")
                                     return@forEach
                                 }
                                 
@@ -133,9 +115,7 @@ class BookRepository(
                                 authorCache[authorKey] = authorDetail
                                 updateCache(authorKey)
                                 referencedData.authors[authorKey] = authorDetail
-                                println("Fetched individual author: $authorKey -> ${authorDetail.name}")
                             } catch (e: Exception) {
-                                println("Failed to fetch individual author $authorKey: ${e.message}")
                                 // Skip if author fetch fails
                             }
                         }
@@ -285,13 +265,17 @@ class BookRepository(
     ): Flow<Resource<List<Book>>> = flow {
         emit(Resource.Loading)
         try {
+            // Calculate offset based on page number (OpenLibrary API uses offset)
+            val offset = (page - 1) * 20
+            
             val response = api.searchBooks(
                 query = query,
-                page = page,
+                offset = offset, // Use offset instead of page
                 limit = 20, // Fixed page size for manual loading
                 language = if (language.code.isNotEmpty()) language.code else null,
                 sort = sort.apiValue
             )
+            
             val books = response.docs.map { doc ->
                 val bookKey = doc.key
                 val isFavorite = bookDao.isBookFavorite(bookKey)
@@ -347,15 +331,8 @@ class BookRepository(
                     }
                 }
                 
-                // Debug logging
-                println("Author mapping: key=$authorKey, detail=${authorDetail?.name}, original=${author.author.name}, final=$authorName")
-                
                 authorName
             } ?: emptyList()
-            
-            // Debug logging for referenced data
-            println("Referenced data summary: authors=${referencedData.authors.size}, subjects=${referencedData.subjects.size}, places=${referencedData.places.size}")
-            println("Author cache contents: ${authorCache.keys.toList()}")
             
             val bookKey = workDetail.key
             val isFavorite = bookDao.isBookFavorite(bookKey)
@@ -412,8 +389,6 @@ class BookRepository(
             )
             emit(Resource.Success(book))
         } catch (e: Exception) {
-            println("Error in getWorkDetail: ${e.message}")
-            e.printStackTrace()
             emit(Resource.Error(e.message ?: "An error occurred"))
         }
     }

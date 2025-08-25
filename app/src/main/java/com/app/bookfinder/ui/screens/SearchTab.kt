@@ -52,7 +52,6 @@ fun SearchTab(
                 message = books.message,
                 onRetry = onRetry,
                 onRefresh = onRefresh,
-                isRefreshing = isRefreshing
             )
         }
     }

@@ -36,6 +36,7 @@ import com.app.bookfinder.ui.viewmodel.BookDetailViewModel
 import com.app.bookfinder.data.model.Author
 import com.app.bookfinder.data.model.AuthorDetail
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookDetailScreen(
@@ -123,10 +124,9 @@ fun BookDetailScreen(
                         viewModel.loadBookDetail() 
                     },
                     modifier = Modifier.padding(paddingValues),
-                    onRefresh = { 
+                    onRefresh = {
                         viewModel.loadBookDetail() 
                     },
-                    isRefreshing = false
                 )
             }
         }

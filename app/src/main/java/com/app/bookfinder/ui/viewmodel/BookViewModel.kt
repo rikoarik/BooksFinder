@@ -34,23 +34,19 @@ class BookViewModel(
     private val _isLoadingSort = MutableStateFlow(false)
     val isLoadingSort: StateFlow<Boolean> = _isLoadingSort.asStateFlow()
 
-    private val _lastSearchQuery = MutableStateFlow("")
     private val _currentPage = MutableStateFlow(1)
     private val _hasMorePages = MutableStateFlow(true)
     val hasMorePages: StateFlow<Boolean> = _hasMorePages.asStateFlow()
 
     private val _selectedLanguage = MutableStateFlow(LanguageOption.ALL)
-
     private val _selectedSort = MutableStateFlow(SortOption.RELEVANCE)
     val selectedSort: StateFlow<SortOption> = _selectedSort.asStateFlow()
 
     private val _allBooks = MutableStateFlow<List<Book>>(emptyList())
-
-    private val _isLoadingInitial = MutableStateFlow(true)
-    val isLoadingInitial: StateFlow<Boolean> = _isLoadingInitial.asStateFlow()
-
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
+
+    private val _lastSearchQuery = MutableStateFlow("")
 
     init {
         loadFavoriteBooks()
@@ -82,78 +78,51 @@ class BookViewModel(
         _hasMorePages.value = true
 
         viewModelScope.launch {
-            try {
-                repository.searchBooks(query, 1, _selectedLanguage.value, sort)
-                    .collect { resource ->
-                        if (resource is Resource.Success) {
-                            _allBooks.value = resource.data
-                            _books.value = resource
-                            _hasMorePages.value = resource.data.size >= 20
-                        } else {
-                            _books.value = resource
-                            _hasMorePages.value = false
-                        }
+            repository.searchBooks(query, 1, _selectedLanguage.value, sort)
+                .collect { resource ->
+                    if (resource is Resource.Success) {
+                        _allBooks.value = resource.data
+                        _books.value = resource
+                        _hasMorePages.value = resource.data.isNotEmpty()
+                        _currentPage.value = 1
+                    } else {
+                        _books.value = resource
+                        _hasMorePages.value = false
                     }
-            } catch (e: Exception) {
-                _books.value = Resource.Error(e.message ?: "Search failed")
-                _hasMorePages.value = false
-            } finally {
-                _isSearching.value = false
-            }
+                    _isSearching.value = false
+                }
         }
     }
 
     fun loadMoreBooks() {
-        if (!_hasMorePages.value || _isLoadingMore.value) {
-            return
-        }
-        
+        if (_isLoadingMore.value || !_hasMorePages.value) return
+
         _isLoadingMore.value = true
         val nextPage = _currentPage.value + 1
-        
-        viewModelScope.launch {
-            try {
-                val query = _searchQuery.value
-                val result = if (query.isNotEmpty()) {
-                    repository.searchBooks(
-                        query = query,
-                        page = nextPage,
-                        language = _selectedLanguage.value,
-                        sort = _selectedSort.value
-                    )
-                } else {
-                    repository.searchBooks(
-                        query = "android programming",
-                        page = nextPage,
-                        language = _selectedLanguage.value,
-                        sort = _selectedSort.value
-                    )
-                }
-                
-                result.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            val currentBooks = _books.value
-                            if (currentBooks is Resource.Success) {
-                                val updated = currentBooks.data + resource.data
-                                _books.value = Resource.Success(updated)
-                                _currentPage.value = nextPage
-                                _hasMorePages.value = resource.data.isNotEmpty()
-                            }
-                        }
-                        is Resource.Error -> {
-                            // Handle error silently for load more
-                        }
-                        is Resource.Loading -> {
-                            // Loading state already handled
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                // Handle error silently for load more
-            } finally {
-                _isLoadingMore.value = false
+        val query = _lastSearchQuery.value.ifBlank {
+            when (_selectedSort.value) {
+                SortOption.NEW -> "popular"
+                SortOption.OLD -> "classic"
+                SortOption.RANDOM -> "random"
+                SortOption.KEY -> "popular"
+                else -> "popular"
             }
+        }
+
+        viewModelScope.launch {
+            repository.searchBooks(query, nextPage, _selectedLanguage.value, _selectedSort.value)
+                .collect { resource ->
+                    if (resource is Resource.Success) {
+                        val currentBooks = (_books.value as? Resource.Success)?.data ?: emptyList()
+                        val updatedBooks = currentBooks + resource.data
+                        _books.value = Resource.Success(updatedBooks)
+                        _currentPage.value = nextPage
+                        _hasMorePages.value = resource.data.isNotEmpty()
+                    } else {
+                        _hasMorePages.value = false
+                    }
+                    _isLoadingMore.value = false
+                }
         }
     }
 
@@ -170,94 +139,58 @@ class BookViewModel(
         _currentPage.value = 1
         _hasMorePages.value = true
 
-        viewModelScope.launch {
-            try {
-                val query = when (sort) {
-                    SortOption.NEW -> "popular"
-                    SortOption.OLD -> "classic"
-                    SortOption.RANDOM -> "random"
-                    SortOption.KEY -> "popular"
-                    else -> "popular"
-                }
-
-                repository.searchBooks(query, 1, _selectedLanguage.value, sort)
-                    .collect { resource ->
-                        if (resource is Resource.Success) {
-                            _allBooks.value = resource.data
-                            _books.value = resource
-                            _hasMorePages.value = resource.data.size >= 20
-                        } else {
-                            _books.value = resource
-                            _hasMorePages.value = false
-                        }
-                    }
-            } catch (e: Exception) {
-                _books.value = Resource.Error(e.message ?: "Failed to load books")
-                _hasMorePages.value = false
-            } finally {
-                _isLoadingSort.value = false
-            }
+        val defaultQuery = when (sort) {
+            SortOption.NEW -> "popular"
+            SortOption.OLD -> "classic"
+            SortOption.RANDOM -> "random"
+            SortOption.KEY -> "popular"
+            else -> "popular"
         }
-    }
+        _lastSearchQuery.value = defaultQuery
 
-    fun retrySearch() {
-        val query = _lastSearchQuery.value
-        if (query.isNotEmpty()) executeSearch(query, _selectedSort.value)
-        else loadBooksBySort(_selectedSort.value)
-    }
-
-    fun refreshData() {
-        _isRefreshing.value = true
         viewModelScope.launch {
-            try {
-                val query = _lastSearchQuery.value
-                if (query.isNotEmpty()) {
-                    _currentPage.value = 1
-                    _hasMorePages.value = true
-                    executeSearch(query, _selectedSort.value)
-                } else {
-                    loadBooksBySort(_selectedSort.value)
+            repository.searchBooks(defaultQuery, 1, _selectedLanguage.value, sort)
+                .collect { resource ->
+                    if (resource is Resource.Success) {
+                        _allBooks.value = resource.data
+                        _books.value = resource
+                        _hasMorePages.value = resource.data.isNotEmpty()
+                        _currentPage.value = 1
+                    } else {
+                        _books.value = resource
+                        _hasMorePages.value = false
+                    }
+                    _isLoadingSort.value = false
                 }
-                loadFavoriteBooks()
-            } finally {
-                _isRefreshing.value = false
-            }
         }
     }
 
     private fun loadInitialBooks() {
+        _currentPage.value = 1
+        _hasMorePages.value = true
+        _lastSearchQuery.value = "popular"
+
         viewModelScope.launch {
-            _isLoadingInitial.value = true
-            try {
-                repository.searchBooks("popular", 1, _selectedLanguage.value, _selectedSort.value)
-                    .collect { resource ->
-                        if (resource is Resource.Success) {
-                            _allBooks.value = resource.data
-                            _books.value = if (resource.data.isNotEmpty()) resource else Resource.Success(emptyList())
-                            _hasMorePages.value = resource.data.size >= 20
-                        } else {
-                            _books.value = resource
-                            _hasMorePages.value = false
-                        }
+            repository.searchBooks("popular", 1, _selectedLanguage.value, _selectedSort.value)
+                .collect { resource ->
+                    if (resource is Resource.Success) {
+                        _allBooks.value = resource.data
+                        _books.value = resource
+                        _hasMorePages.value = resource.data.isNotEmpty()
+                        _currentPage.value = 1
+                    } else {
+                        _books.value = resource
+                        _hasMorePages.value = false
                     }
-            } catch (_: Exception) {
-                _books.value = Resource.Success(emptyList())
-                _hasMorePages.value = false
-            } finally {
-                _isLoadingInitial.value = false
-            }
+                }
         }
     }
 
     fun loadFavoriteBooks() {
         viewModelScope.launch {
-            try {
-                repository.getFavoriteBooks().collect { favs ->
-                    _favoriteBooks.value = favs
-                    refreshCurrentBooks()
-                }
-            } catch (_: Exception) {
-                _favoriteBooks.value = emptyList()
+            repository.getFavoriteBooks().collect { favs ->
+                _favoriteBooks.value = favs
+                refreshCurrentBooks()
             }
         }
     }
@@ -274,10 +207,8 @@ class BookViewModel(
 
     fun toggleFavorite(book: Book) {
         viewModelScope.launch {
-            try {
-                repository.toggleFavorite(book)
-                loadFavoriteBooks()
-            } catch (_: Exception) {}
+            repository.toggleFavorite(book)
+            loadFavoriteBooks()
         }
     }
 }

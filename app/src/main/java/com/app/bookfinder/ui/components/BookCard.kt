@@ -30,7 +30,7 @@ fun BookCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .clickable { onBookClick() },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(

@@ -16,7 +16,7 @@ import com.app.bookfinder.ui.components.*
 import androidx.compose.ui.res.stringResource
 import com.app.bookfinder.R
 import com.app.bookfinder.ui.navigation.Screen
-import kotlinx.coroutines.delay
+import androidx.compose.runtime.snapshotFlow
 
 @Composable
 fun BookListTab(
@@ -27,43 +27,30 @@ fun BookListTab(
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
     onLoadMore: () -> Unit,
-    hasMorePages: Boolean = false
+    hasMorePages: Boolean = false,
+    isLoadingMore: Boolean = false
 ) {
     val listState = rememberLazyListState()
-    var isLoadingMore by remember { mutableStateOf(false) }
 
-    val shouldLoadMore = remember {
-        derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-            val totalItems = when (books) {
-                is Resource.Success -> books.data.size
-                else -> 0
-            }
+    LaunchedEffect(listState, books) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .collect { visibleItems ->
+                val lastVisibleItem = visibleItems.lastOrNull()
+                val totalItems = (books as? Resource.Success)?.data?.size ?: 0
 
-            val shouldLoad = lastVisibleItem != null &&
-                    lastVisibleItem.index >= totalItems - 3 &&
+                if (lastVisibleItem != null &&
+                    lastVisibleItem.index >= totalItems - 1 &&
                     totalItems > 0 &&
                     hasMorePages &&
                     !isLoadingMore
-
-            shouldLoad
-        }
-    }
-
-    LaunchedEffect(shouldLoadMore.value) {
-        if (shouldLoadMore.value) {
-            isLoadingMore = true
-            onLoadMore()
-            // Reset loading state after a delay
-            delay(300)
-            isLoadingMore = false
-        }
+                ) {
+                    onLoadMore()
+                }
+            }
     }
 
     when (books) {
-        is Resource.Loading -> {
-            LoadingState()
-        }
+        is Resource.Loading -> LoadingState()
         is Resource.Success -> {
             if (books.data.isEmpty()) {
                 EmptyState(
@@ -81,14 +68,12 @@ fun BookListTab(
                     items(books.data) { book ->
                         BookCard(
                             book = book,
-                            onBookClick = {
-                                onBookClick(book.key)
-                            },
+                            onBookClick = { onBookClick(book.key) },
                             onFavoriteClick = onFavoriteClick
                         )
                     }
 
-                    if (isLoadingMore) {
+                    if (!hasMorePages && books.data.isNotEmpty() && !isLoadingMore) {
                         item {
                             Box(
                                 modifier = Modifier
@@ -96,24 +81,30 @@ fun BookListTab(
                                     .padding(16.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(32.dp),
-                                        strokeWidth = 3.dp,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        text = "Loading more books...",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(32.dp),
+                                    strokeWidth = 3.dp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }else{
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No more books to load",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                         }
                     }
+
                 }
             }
         }
@@ -125,13 +116,13 @@ fun BookListTab(
                 ErrorState(
                     message = books.message,
                     onRetry = onRetry,
-                    onRefresh = onRefresh,
-                    isRefreshing = isRefreshing
+                    onRefresh = onRefresh
                 )
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -145,7 +136,8 @@ fun BookListTabLoadingPreview() {
             onRefresh = {},
             isRefreshing = false,
             onLoadMore = {},
-            hasMorePages = true
+            hasMorePages = true,
+            isLoadingMore = false
         )
     }
 }
@@ -162,7 +154,8 @@ fun BookListTabEmptyPreview() {
             onRefresh = {},
             isRefreshing = false,
             onLoadMore = {},
-            hasMorePages = true
+            hasMorePages = true,
+            isLoadingMore = false
         )
     }
 }
@@ -179,7 +172,8 @@ fun BookListTabErrorPreview() {
             onRefresh = {},
             isRefreshing = false,
             onLoadMore = {},
-            hasMorePages = true
+            hasMorePages = true,
+            isLoadingMore = false
         )
     }
 }
